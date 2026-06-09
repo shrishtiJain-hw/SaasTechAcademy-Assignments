@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+
+<entity-engine-xml>
+
+    <!-- ===================== PARTIES ===================== -->
+
+    <!-- College as Organization -->
+    <RmParty partyId="ORG_COLLEGE" partyTypeId="ORGANIZATION"/>
+    <RmOrganization partyId="ORG_COLLEGE" organizationName="Greenfield Institute of Technology"/>
+
+    <!-- Departments as Organizations -->
+    <RmParty partyId="ORG_CS_DEPT" partyTypeId="ORGANIZATION"/>
+    <RmOrganization partyId="ORG_CS_DEPT" organizationName="Department of Computer Science"/>
+
+    <RmParty partyId="ORG_MATH_DEPT" partyTypeId="ORGANIZATION"/>
+    <RmOrganization partyId="ORG_MATH_DEPT" organizationName="Department of Mathematics"/>
+
+    <!-- Students as Persons -->
+    <RmParty partyId="PER_STU001" partyTypeId="PERSON"/>
+    <RmPerson partyId="PER_STU001" firstName="Shrishti" lastName="Jain" birthDate="2002-04-15"/>
+
+    <RmParty partyId="PER_STU002" partyTypeId="PERSON"/>
+    <RmPerson partyId="PER_STU002" firstName="Rahul" lastName="Sharma" birthDate="2001-09-22"/>
+
+    <!-- Teaching Staff as Persons -->
+    <RmParty partyId="PER_FAC001" partyTypeId="PERSON"/>
+    <RmPerson partyId="PER_FAC001" firstName="Anita" lastName="Verma" birthDate="1978-03-10"/>
+
+    <RmParty partyId="PER_FAC002" partyTypeId="PERSON"/>
+    <RmPerson partyId="PER_FAC002" firstName="Rajesh" lastName="Kumar" birthDate="1972-11-05"/>
+
+    <!-- ===================== ROLES ===================== -->
+
+    <RmPartyRole partyId="ORG_COLLEGE"   roleTypeId="INTERNAL_ORGANIZATION"/>
+    <RmPartyRole partyId="ORG_CS_DEPT"   roleTypeId="DEPARTMENT"/>
+    <RmPartyRole partyId="ORG_MATH_DEPT" roleTypeId="DEPARTMENT"/>
+
+    <RmPartyRole partyId="PER_STU001" roleTypeId="STUDENT"/>
+    <RmPartyRole partyId="PER_STU002" roleTypeId="STUDENT"/>
+
+    <RmPartyRole partyId="PER_FAC001" roleTypeId="FACULTY"/>
+    <RmPartyRole partyId="PER_FAC002" roleTypeId="FACULTY"/>
+
+    <!-- ===================== CONTACT MECHANISMS ===================== -->
+
+    <!-- College Contacts -->
+    <RmContactMech contactMechId="CM_COL_POST" contactMechTypeId="POSTAL_ADDRESS"/>
+    <RmPostalAddress contactMechId="CM_COL_POST" toName="Greenfield Institute of Technology" attnName="Main Office" address1="123 Academic Blvd" city="Metropolis" postalCode="12345"/>
+    <RmPartyContactMech partyId="ORG_COLLEGE" contactMechId="CM_COL_POST" contactMechPurposeId="OFFICE" fromDate="2020-01-01 00:00:00.0"/>
+
+    <RmContactMech contactMechId="CM_COL_TEL" contactMechTypeId="TELECOM_NUMBER"/>
+    <RmTelecomNumber contactMechId="CM_COL_TEL" countryCode="1" areaCode="555" contactNumber="0100"/>
+    <RmPartyContactMech partyId="ORG_COLLEGE" contactMechId="CM_COL_TEL" contactMechPurposeId="OFFICE" fromDate="2020-01-01 00:00:00.0"/>
+
+    <!-- CS Dept Contacts -->
+    <RmContactMech contactMechId="CM_CS_POST" contactMechTypeId="POSTAL_ADDRESS"/>
+    <RmPostalAddress contactMechId="CM_CS_POST" toName="Department of Computer Science" attnName="CS Desk" address1="123 Academic Blvd" address2="Room 401" city="Metropolis" postalCode="12345"/>
+    <RmPartyContactMech partyId="ORG_CS_DEPT" contactMechId="CM_CS_POST" contactMechPurposeId="OFFICE" fromDate="2020-01-01 00:00:00.0"/>
+
+    <!-- Student Shrishti Contacts -->
+    <RmContactMech contactMechId="CM_STU1_EMAIL" contactMechTypeId="EMAIL_ADDRESS" infoString="shrishti@example.com"/>
+    <RmPartyContactMech partyId="PER_STU001" contactMechId="CM_STU1_EMAIL" contactMechPurposeId="WORK" fromDate="2020-09-01 00:00:00.0"/>
+
+    <RmContactMech contactMechId="CM_STU1_TEL" contactMechTypeId="TELECOM_NUMBER"/>
+    <RmTelecomNumber contactMechId="CM_STU1_TEL" countryCode="91" areaCode="987" contactNumber="654321"/>
+    <RmPartyContactMech partyId="PER_STU001" contactMechId="CM_STU1_TEL" contactMechPurposeId="HOME" fromDate="2020-09-01 00:00:00.0"/>
+
+    <RmContactMech contactMechId="CM_STU1_ADDR" contactMechTypeId="POSTAL_ADDRESS"/>
+    <RmPostalAddress contactMechId="CM_STU1_ADDR" toName="Shrishti Jain" address1="456 Residency Rd" city="New Delhi" postalCode="110001"/>
+    <RmPartyContactMech partyId="PER_STU001" contactMechId="CM_STU1_ADDR" contactMechPurposeId="HOME" fromDate="2020-09-01 00:00:00.0"/>
+
+    <!-- Student Rahul Contacts -->
+    <RmContactMech contactMechId="CM_STU2_EMAIL" contactMechTypeId="EMAIL_ADDRESS" infoString="rahul@example.com"/>
+    <RmPartyContactMech partyId="PER_STU002" contactMechId="CM_STU2_EMAIL" contactMechPurposeId="WORK" fromDate="2020-09-01 00:00:00.0"/>
+
+    <!-- Faculty Anita Contacts -->
+    <RmContactMech contactMechId="CM_FAC1_EMAIL" contactMechTypeId="EMAIL_ADDRESS" infoString="anita.verma@example.com"/>
+    <RmPartyContactMech partyId="PER_FAC001" contactMechId="CM_FAC1_EMAIL" contactMechPurposeId="WORK" fromDate="2015-07-01 00:00:00.0"/>
+
+    <!-- Faculty Rajesh Contacts -->
+    <RmContactMech contactMechId="CM_FAC2_EMAIL" contactMechTypeId="EMAIL_ADDRESS" infoString="rajesh.kumar@example.com"/>
+    <RmPartyContactMech partyId="PER_FAC002" contactMechId="CM_FAC2_EMAIL" contactMechPurposeId="WORK" fromDate="2010-06-01 00:00:00.0"/>
+
+</entity-engine-xml>

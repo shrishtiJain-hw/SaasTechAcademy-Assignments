@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<services xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://ofbiz.apache.org/dtds/services.xsd">
+
+    <!-- PARTY -->
+
+    <service name="createRmParty"
+        engine="entity-auto"
+        invoke="create"
+        default-entity-name="RmParty"
+        auth="false">
+
+        <auto-attributes include="pk" mode="IN"/>
+        <auto-attributes include="nonpk" mode="IN"/>
+
+    </service>
+
+
+    <!-- PERSON -->
+
+    <service name="createRmPerson"
+        engine="groovy"
+        location="component://relationshipmgr/script/PartyServices.groovy"
+        invoke="createPerson"
+        auth="false">
+
+        <attribute name="partyId" type="String" mode="IN"/>
+        <attribute name="firstName" type="String" mode="IN"/>
+        <attribute name="lastName" type="String" mode="IN"/>
+        <attribute name="birthDate" type="String" mode="IN"/>
+
+    </service>
+
+
+    <!-- ORGANIZATION -->
+
+    <service name="createRmOrganization"
+        engine="groovy"
+        location="component://relationshipmgr/script/PartyServices.groovy"
+        invoke="createOrganization"
+        auth="false">
+
+        <attribute name="partyId" type="String" mode="IN"/>
+        <attribute name="organizationName" type="String" mode="IN"/>
+
+    </service>
+
+
+    <!-- PARTY ROLE -->
+
+    <service name="createRmPartyRole"
+        engine="entity-auto"
+        invoke="create"
+        default-entity-name="RmPartyRole"
+        auth="false">
+
+        <auto-attributes include="pk" mode="IN"/>
+        <auto-attributes include="nonpk" mode="IN"/>
+
+    </service>
+
+
+    <!-- UPDATE PERSON -->
+
+    <service name="updateRmPerson"
+        engine="groovy"
+        location="component://relationshipmgr/script/PartyServices.groovy"
+        invoke="updatePerson"
+        auth="false">
+
+        <attribute name="partyId" type="String" mode="IN"/>
+        <attribute name="firstName" type="String" mode="IN" optional="true"/>
+        <attribute name="lastName" type="String" mode="IN" optional="true"/>
+        <attribute name="birthDate" type="String" mode="IN" optional="true"/>
+
+    </service>
+
+
+    <!-- UPDATE ORGANIZATION -->
+
+    <service name="updateRmOrganization"
+        engine="groovy"
+        location="component://relationshipmgr/script/PartyServices.groovy"
+        invoke="updateOrganization"
+        auth="false">
+
+        <attribute name="partyId" type="String" mode="IN"/>
+        <attribute name="organizationName" type="String" mode="IN" optional="true"/>
+
+    </service>
+
+
+    <!-- CREATE CONTACT MECH -->
+
+    <service name="createRmContactMech"
+        engine="groovy"
+        location="component://relationshipmgr/script/PartyServices.groovy"
+        invoke="createContactMech"
+        auth="false">
+
+        <attribute name="partyId" type="String" mode="IN"/>
+        <attribute name="contactMechTypeId" type="String" mode="IN"/>
+        <attribute name="contactMechPurposeId" type="String" mode="IN"/>
+        <attribute name="infoString" type="String" mode="IN" optional="true"/>
+
+        <!-- Telecom fields -->
+        <attribute name="countryCode" type="String" mode="IN" optional="true"/>
+        <attribute name="areaCode" type="String" mode="IN" optional="true"/>
+        <attribute name="contactNumber" type="String" mode="IN" optional="true"/>
+
+        <!-- Postal address fields -->
+        <attribute name="toName" type="String" mode="IN" optional="true"/>
+        <attribute name="attnName" type="String" mode="IN" optional="true"/>
+        <attribute name="address1" type="String" mode="IN" optional="true"/>
+        <attribute name="address2" type="String" mode="IN" optional="true"/>
+        <attribute name="city" type="String" mode="IN" optional="true"/>
+        <attribute name="postalCode" type="String" mode="IN" optional="true"/>
+
+    </service>
+
+
+    <!-- EXPIRE PARTY CONTACT MECH -->
+
+    <service name="expireRmPartyContactMech"
+        engine="groovy"
+        location="component://relationshipmgr/script/PartyServices.groovy"
+        invoke="expirePartyContactMech"
+        auth="false">
+
+        <attribute name="partyId" type="String" mode="IN"/>
+        <attribute name="contactMechId" type="String" mode="IN"/>
+        <attribute name="contactMechPurposeId" type="String" mode="IN"/>
+        <attribute name="fromDate" type="java.sql.Timestamp" mode="IN"/>
+
+    </service>
+
+</services>

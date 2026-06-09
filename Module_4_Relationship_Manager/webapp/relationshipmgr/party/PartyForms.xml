@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://ofbiz.apache.org/Widget-Form"
+       xsi:schemaLocation="http://ofbiz.apache.org/Widget-Form http://ofbiz.apache.org/dtds/widget-form.xsd">
+
+    <!-- FIND & LIST PARTIES -->
+    <form name="ListParties" type="list" list-name="listIt" paginate-target="FindParty"
+          odd-row-style="alternate-row" header-row-style="header-row-2" default-table-style="basic-table hover-bar">
+        <actions>
+            <entity-condition entity-name="RmParty">
+                <order-by field-name="partyId"/>
+            </entity-condition>
+        </actions>
+        <row-actions>
+            <entity-one entity-name="RmPerson" value-field="rmPerson">
+                <field-map field-name="partyId"/>
+            </entity-one>
+            <entity-one entity-name="RmOrganization" value-field="org">
+                <field-map field-name="partyId"/>
+            </entity-one>
+            <set field="partyName" value="${rmPerson.firstName} ${rmPerson.lastName}${org.organizationName}"/>
+        </row-actions>
+        <field name="partyId" title="Party ID" widget-style="buttontext">
+            <hyperlink description="${partyId}" target="EditParty">
+                <parameter param-name="partyId"/>
+            </hyperlink>
+        </field>
+        <field name="partyTypeId" title="Type"><display/></field>
+        <field name="partyName" title="Name"><display/></field>
+    </form>
+
+    <!-- CREATE PERSON -->
+    <form name="PersonForm" type="single" target="createRmPerson">
+        <field name="partyId" title="Party ID"><text/></field>
+        <field name="firstName" title="First Name"><text/></field>
+        <field name="lastName" title="Last Name"><text/></field>
+        <field name="birthDate" title="Birth Date (YYYY-MM-DD)"><text/></field>
+        <field name="submit" title="Create Person"><submit/></field>
+    </form>
+
+    <!-- CREATE ORGANIZATION -->
+    <form name="OrganizationForm" type="single" target="createRmOrganization">
+        <field name="partyId" title="Party ID"><text/></field>
+        <field name="organizationName" title="Organization Name"><text/></field>
+        <field name="submit" title="Create Organization"><submit/></field>
+    </form>
+
+    <!-- EDIT PERSON -->
+    <form name="EditPerson" type="single" target="updateRmPerson" default-map-name="rmPerson">
+        <field name="partyId"><hidden/></field>
+        <field name="partyIdDisplay" title="Party ID" entry-name="partyId"><display/></field>
+        <field name="firstName" title="First Name"><text/></field>
+        <field name="lastName" title="Last Name"><text/></field>
+        <field name="birthDate" title="Birth Date (YYYY-MM-DD)"><text/></field>
+        <field name="submit" title="Update Person"><submit/></field>
+    </form>
+
+    <!-- EDIT ORGANIZATION -->
+    <form name="EditOrganization" type="single" target="updateRmOrganization" default-map-name="rmOrganization">
+        <field name="partyId"><hidden/></field>
+        <field name="partyIdDisplay" title="Party ID" entry-name="partyId"><display/></field>
+        <field name="organizationName" title="Organization Name"><text/></field>
+        <field name="submit" title="Update Organization"><submit/></field>
+    </form>
+
+    <!-- ROLES LIST & ADD -->
+    <form name="ListPartyRoles" type="list" list-name="partyRoles"
+          odd-row-style="alternate-row" default-table-style="basic-table hover-bar">
+        <field name="roleTypeId" title="Role Type"><display/></field>
+    </form>
+
+    <form name="AddPartyRole" type="single" target="createRmPartyRole">
+        <field name="partyId"><hidden value="${partyId}"/></field>
+        <field name="roleTypeId" title="Role Type">
+            <drop-down allow-empty="false">
+                <option key="CUSTOMER" description="Customer"/>
+                <option key="EMPLOYEE" description="Employee"/>
+                <option key="EMPLOYER" description="Employer"/>
+                <option key="STUDENT" description="Student"/>
+                <option key="FACULTY" description="Faculty"/>
+                <option key="DEPARTMENT" description="Department"/>
+                <option key="INTERNAL_ORGANIZATION" description="Internal Organization"/>
+            </drop-down>
+        </field>
+        <field name="submitButton" title="Assign Role" widget-style="smallSubmit"><submit/></field>
+    </form>
+
+    <!-- CONTACT MECHANISMS LIST -->
+    <form name="ListPartyContactMechs" type="list" list-name="contactMechsList"
+          odd-row-style="alternate-row" default-table-style="basic-table hover-bar">
+        <field name="partyId"><hidden/></field>
+        <field name="contactMechId"><hidden/></field>
+        <field name="fromDate"><hidden/></field>
+        <field name="contactMechTypeId" title="Type"><display/></field>
+        <field name="contactMechPurposeId" title="Purpose"><display/></field>
+        <field name="displayInfo" title="Contact Info"><display/></field>
+        <field name="fromDateDisplay" title="From" entry-name="fromDate"><display/></field>
+        <field name="thruDateDisplay" title="Thru" entry-name="thruDate"><display/></field>
+        <field name="expireLink" title="Action" widget-style="buttontext" use-when="thruDate==null">
+            <hyperlink description="Expire" target="expireRmPartyContactMech">
+                <parameter param-name="partyId"/>
+                <parameter param-name="contactMechId"/>
+                <parameter param-name="contactMechPurposeId"/>
+                <parameter param-name="fromDate"/>
+            </hyperlink>
+        </field>
+    </form>
+
+    <!-- ADD CONTACT MECH FORMS -->
+    <form name="AddEmailForm" type="single" target="createRmContactMech">
+        <field name="partyId"><hidden value="${partyId}"/></field>
+        <field name="contactMechTypeId"><hidden value="EMAIL_ADDRESS"/></field>
+        <field name="contactMechPurposeId" title="Purpose">
+            <drop-down>
+                <entity-options entity-name="RmContactMechPurpose" key-field-name="contactMechPurposeId" description="${description}">
+                    <entity-order-by field-name="description"/>
+                </entity-options>
+            </drop-down>
+        </field>
+        <field name="infoString" title="Email Address"><text/></field>
+        <field name="submitButton" title="Add Email" widget-style="smallSubmit"><submit/></field>
+    </form>
+
+    <form name="AddTelecomForm" type="single" target="createRmContactMech">
+        <field name="partyId"><hidden value="${partyId}"/></field>
+        <field name="contactMechTypeId"><hidden value="TELECOM_NUMBER"/></field>
+        <field name="contactMechPurposeId" title="Purpose">
+            <drop-down>
+                <entity-options entity-name="RmContactMechPurpose" key-field-name="contactMechPurposeId" description="${description}">
+                    <entity-order-by field-name="description"/>
+                </entity-options>
+            </drop-down>
+        </field>
+        <field name="countryCode" title="Country Code"><text size="5"/></field>
+        <field name="areaCode" title="Area Code"><text size="5"/></field>
+        <field name="contactNumber" title="Phone Number"><text size="15"/></field>
+        <field name="submitButton" title="Add Phone" widget-style="smallSubmit"><submit/></field>
+    </form>
+
+    <form name="AddPostalForm" type="single" target="createRmContactMech">
+        <field name="partyId"><hidden value="${partyId}"/></field>
+        <field name="contactMechTypeId"><hidden value="POSTAL_ADDRESS"/></field>
+        <field name="contactMechPurposeId" title="Purpose">
+            <drop-down>
+                <entity-options entity-name="RmContactMechPurpose" key-field-name="contactMechPurposeId" description="${description}">
+                    <entity-order-by field-name="description"/>
+                </entity-options>
+            </drop-down>
+        </field>
+        <field name="toName" title="To Name"><text/></field>
+        <field name="attnName" title="Attn Name"><text/></field>
+        <field name="address1" title="Address Line 1"><text/></field>
+        <field name="address2" title="Address Line 2"><text/></field>
+        <field name="city" title="City"><text/></field>
+        <field name="postalCode" title="Postal Code"><text size="10"/></field>
+        <field name="submitButton" title="Add Address" widget-style="smallSubmit"><submit/></field>
+    </form>
+
+</forms>

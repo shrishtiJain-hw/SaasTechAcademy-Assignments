@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ofbiz-component name="relationshipmgr"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://ofbiz.apache.org/dtds/ofbiz-component.xsd">
+
+    <resource-loader name="main" type="component"/>
+
+    <classpath type="dir" location="config"/>
+
+    <!-- ENTITY -->
+    <entity-resource type="model" reader-name="main" loader="main" location="entitydef/entitymodel.xml"/>
+
+    <!-- SEED DATA -->
+    <entity-resource type="data" reader-name="seed" loader="main"
+                     location="data/RelationshipmgrTypeData.xml"/>
+    <entity-resource type="data" reader-name="seed" loader="main"
+                     location="data/RelationshipmgrSecurityPermissionSeedData.xml"/>
+
+    <!-- DEMO DATA -->
+    <entity-resource type="data" reader-name="demo" loader="main"
+                     location="data/RelationshipmgrDemoData.xml"/>
+    <entity-resource type="data" reader-name="demo" loader="main"
+                     location="data/RelationshipmgrSecurityGroupDemoData.xml"/>
+
+    <!-- SERVICE -->
+    <service-resource type="model"
+                      loader="main"
+                      location="servicedef/services.xml"/>
+
+    <!-- WEBAPP -->
+    <webapp name="relationshipmgr"
+            title="Relationship Manager"
+            server="default-server"
+            location="webapp/relationshipmgr"
+            mount-point="/relationshipmgr"
+            base-permission="OFBTOOLS"/>
+
+</ofbiz-component>

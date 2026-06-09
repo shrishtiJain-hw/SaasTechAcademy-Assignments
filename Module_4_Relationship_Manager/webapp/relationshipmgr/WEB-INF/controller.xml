@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<site-conf xmlns="http://ofbiz.apache.org/Site-Conf"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://ofbiz.apache.org/Site-Conf http://ofbiz.apache.org/dtds/site-conf.xsd">
+
+    <include location="component://common/webcommon/WEB-INF/common-controller.xml"/>
+
+    <!-- MAIN & FIND -->
+    <request-map uri="main">
+        <security https="false" auth="true"/>
+        <response name="success" type="view" value="FindParty"/>
+    </request-map>
+
+    <request-map uri="FindParty">
+        <security https="false" auth="true"/>
+        <response name="success" type="view" value="FindParty"/>
+    </request-map>
+
+    <request-map uri="EditParty">
+        <security https="false" auth="true"/>
+        <response name="success" type="view" value="EditParty"/>
+    </request-map>
+
+    <!-- CREATE/UPDATE PERSON -->
+    <request-map uri="createRmPerson">
+        <security https="false" auth="true"/>
+        <event type="service" invoke="createRmPerson"/>
+        <response name="success" type="request-redirect" value="FindParty"/>
+        <response name="error" type="view" value="FindParty"/>
+    </request-map>
+
+    <request-map uri="updateRmPerson">
+        <security https="false" auth="true"/>
+        <event type="service" invoke="updateRmPerson"/>
+        <response name="success" type="request-redirect" value="EditParty">
+            <redirect-parameter name="partyId"/>
+        </response>
+        <response name="error" type="view" value="EditParty"/>
+    </request-map>
+
+    <!-- CREATE/UPDATE ORGANIZATION -->
+    <request-map uri="createRmOrganization">
+        <security https="false" auth="true"/>
+        <event type="service" invoke="createRmOrganization"/>
+        <response name="success" type="request-redirect" value="FindParty"/>
+        <response name="error" type="view" value="FindParty"/>
+    </request-map>
+
+    <request-map uri="updateRmOrganization">
+        <security https="false" auth="true"/>
+        <event type="service" invoke="updateRmOrganization"/>
+        <response name="success" type="request-redirect" value="EditParty">
+            <redirect-parameter name="partyId"/>
+        </response>
+        <response name="error" type="view" value="EditParty"/>
+    </request-map>
+
+    <!-- CREATE PARTY ROLE -->
+    <request-map uri="createRmPartyRole">
+        <security https="false" auth="true"/>
+        <event type="service" invoke="createRmPartyRole"/>
+        <response name="success" type="request-redirect" value="EditParty">
+            <redirect-parameter name="partyId"/>
+        </response>
+        <response name="error" type="view" value="EditParty"/>
+    </request-map>
+
+    <!-- CREATE CONTACT MECH -->
+    <request-map uri="createRmContactMech">
+        <security https="false" auth="true"/>
+        <event type="service" invoke="createRmContactMech"/>
+        <response name="success" type="request-redirect" value="EditParty">
+            <redirect-parameter name="partyId"/>
+        </response>
+        <response name="error" type="view" value="EditParty"/>
+    </request-map>
+
+    <!-- EXPIRE PARTY CONTACT MECH -->
+    <request-map uri="expireRmPartyContactMech">
+        <security https="false" auth="true"/>
+        <event type="service" invoke="expireRmPartyContactMech"/>
+        <response name="success" type="request-redirect" value="EditParty">
+            <redirect-parameter name="partyId"/>
+        </response>
+        <response name="error" type="view" value="EditParty"/>
+    </request-map>
+
+    <!-- VIEW MAPS -->
+    <view-map name="FindParty" type="screen" page="component://relationshipmgr/webapp/relationshipmgr/party/PartyScreens.xml#FindParty"/>
+    <view-map name="EditParty" type="screen" page="component://relationshipmgr/webapp/relationshipmgr/party/PartyScreens.xml#EditParty"/>
+
+</site-conf>

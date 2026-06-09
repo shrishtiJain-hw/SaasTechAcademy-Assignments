@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<screens xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://ofbiz.apache.org/Widget-Screen" xsi:schemaLocation="http://ofbiz.apache.org/Widget-Screen http://ofbiz.apache.org/dtds/widget-screen.xsd">
+
+    <screen name="FindParty">
+        <section>
+            <actions>
+                <set field="titleProperty" value="PageTitleFindParty"/>
+                <set field="headerItem" value="FindParty"/>
+            </actions>
+            <widgets>
+                <decorator-screen name="RelationshipmgrCommonDecorator" location="component://relationshipmgr/widget/CommonScreens.xml">
+                    <decorator-section name="body">
+                        <screenlet title="Create Person">
+                            <include-form name="PersonForm" location="component://relationshipmgr/webapp/relationshipmgr/party/PartyForms.xml"/>
+                        </screenlet>
+                        <screenlet title="Create Organization">
+                            <include-form name="OrganizationForm" location="component://relationshipmgr/webapp/relationshipmgr/party/PartyForms.xml"/>
+                        </screenlet>
+                        <screenlet title="Parties List">
+                            <include-form name="ListParties" location="component://relationshipmgr/webapp/relationshipmgr/party/PartyForms.xml"/>
+                        </screenlet>
+                    </decorator-section>
+                </decorator-screen>
+            </widgets>
+        </section>
+    </screen>
+
+    <screen name="EditParty">
+        <section>
+            <actions>
+                <set field="titleProperty" value="PageTitleEditParty"/>
+                <script location="component://relationshipmgr/script/GetPartyDetails.groovy"/>
+            </actions>
+            <widgets>
+                <decorator-screen name="RelationshipmgrCommonDecorator" location="component://relationshipmgr/widget/CommonScreens.xml">
+                    <decorator-section name="body">
+                        <container style="button-bar">
+                            <link target="FindParty" text="Back to List" style="buttontext"/>
+                        </container>
+
+                        <!-- Show Edit Person details if party type is PERSON -->
+                        <section>
+                            <condition>
+                                <not><if-empty field="rmPerson"/></not>
+                            </condition>
+                            <widgets>
+                                <screenlet title="Edit Person Details">
+                                    <include-form name="EditPerson" location="component://relationshipmgr/webapp/relationshipmgr/party/PartyForms.xml"/>
+                                </screenlet>
+                            </widgets>
+                        </section>
+
+                        <!-- Show Edit Org details if party type is ORGANIZATION -->
+                        <section>
+                            <condition>
+                                <not><if-empty field="rmOrganization"/></not>
+                            </condition>
+                            <widgets>
+                                <screenlet title="Edit Organization Details">
+                                    <include-form name="EditOrganization" location="component://relationshipmgr/webapp/relationshipmgr/party/PartyForms.xml"/>
+                                </screenlet>
+                            </widgets>
+                        </section>
+
+                        <!-- Roles Section -->
+                        <screenlet title="Party Roles">
+                            <include-form name="ListPartyRoles" location="component://relationshipmgr/webapp/relationshipmgr/party/PartyForms.xml"/>
+                            <container style="margin-top:10px;">
+                                <label text="Add New Role:" style="h3"/>
+                                <include-form name="AddPartyRole" location="component://relationshipmgr/webapp/relationshipmgr/party/PartyForms.xml"/>
+                            </container>
+                        </screenlet>
+
+                        <!-- Contact Mechanisms Section -->
+                        <screenlet title="Contact Mechanisms">
+                            <include-form name="ListPartyContactMechs" location="component://relationshipmgr/webapp/relationshipmgr/party/PartyForms.xml"/>
+                        </screenlet>
+
+                        <!-- Add Contact Mechanisms -->
+                        <screenlet title="Add Email Address">
+                            <include-form name="AddEmailForm" location="component://relationshipmgr/webapp/relationshipmgr/party/PartyForms.xml"/>
+                        </screenlet>
+
+                        <screenlet title="Add Telecom Number">
+                            <include-form name="AddTelecomForm" location="component://relationshipmgr/webapp/relationshipmgr/party/PartyForms.xml"/>
+                        </screenlet>
+
+                        <screenlet title="Add Postal Address">
+                            <include-form name="AddPostalForm" location="component://relationshipmgr/webapp/relationshipmgr/party/PartyForms.xml"/>
+                        </screenlet>
+
+                    </decorator-section>
+                </decorator-screen>
+            </widgets>
+        </section>
+    </screen>
+
+</screens>
