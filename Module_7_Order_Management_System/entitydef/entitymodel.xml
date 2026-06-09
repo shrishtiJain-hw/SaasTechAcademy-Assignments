@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+
+<entitymodel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://ofbiz.apache.org/dtds/entitymodel.xsd">
+    <title>Entity of Ordermgmtsystem Component</title>
+    <description>Custom Order and Shipment Entities for Module 7</description>
+
+    <!-- ===================== ORDER DOMAIN ===================== -->
+
+    <entity entity-name="OmsOrderHeader" package-name="org.ordermgmtsystem" title="Order Header">
+        <field name="orderId" type="id"/>
+        <field name="statusId" type="id"/>
+        <field name="orderDate" type="date-time"/>
+        <field name="orderSource" type="short-varchar"/>
+        <field name="orderType" type="short-varchar"/>
+        <field name="orderSubTotal" type="currency-amount"/>
+        <field name="taxSubTotal" type="currency-amount"/>
+        <field name="discount" type="currency-amount"/>
+        <field name="currency" type="short-varchar"/>
+        <field name="lastDateToReturnTimeStamp" type="date-time"/>
+        <field name="canReturn" type="short-varchar"/>
+        <field name="displayOrderId" type="id"/>
+        <field name="storeId" type="id"/>
+        <field name="installationId" type="long-varchar"/>
+        <field name="email" type="long-varchar"/>
+        <prim-key field="orderId"/>
+    </entity>
+
+    <entity entity-name="OmsOrderPart" package-name="org.ordermgmtsystem" title="Order Part">
+        <field name="orderId" type="id"/>
+        <field name="orderPartSeqId" type="id"/>
+        <field name="customerPartyId" type="id"/>
+        <field name="vendorPartyId" type="id"/>
+        <field name="postalContactMechId" type="id"/>
+        <field name="telecomContactMechId" type="id"/>
+        <field name="statusId" type="id"/>
+        <field name="partTotal" type="currency-amount"/>
+        <field name="shipmentMethodEnumId" type="id"/>
+        <field name="estimatedDeliveryDate" type="date-time"/>
+        <prim-key field="orderId"/>
+        <prim-key field="orderPartSeqId"/>
+        <relation type="one" fk-name="OMS_OPART_HDR" rel-entity-name="OmsOrderHeader">
+            <key-map field-name="orderId"/>
+        </relation>
+        <relation type="one" fk-name="OMS_OPART_CUST" rel-entity-name="RmParty">
+            <key-map field-name="customerPartyId" rel-field-name="partyId"/>
+        </relation>
+    </entity>
+
+    <entity entity-name="OmsOrderItem" package-name="org.ordermgmtsystem" title="Order Item">
+        <field name="orderId" type="id"/>
+        <field name="orderPartSeqId" type="id"/>
+        <field name="orderItemSeqId" type="id"/>
+        <field name="productId" type="id"/>
+        <field name="quantity" type="numeric"/>
+        <field name="unitPrice" type="currency-amount"/>
+        <field name="itemStatus" type="id"/>
+        <field name="externalId" type="id"/>
+        <field name="color" type="short-varchar"/>
+        <field name="fulfillmentType" type="short-varchar"/>
+        <field name="fulfillmentSubType" type="short-varchar"/>
+        <field name="omniFulfillmentType" type="short-varchar"/>
+        <field name="returnsEligibility" type="short-varchar"/>
+        <field name="gtin" type="short-varchar"/>
+        <field name="imageURL" type="long-varchar"/>
+        <prim-key field="orderId"/>
+        <prim-key field="orderPartSeqId"/>
+        <prim-key field="orderItemSeqId"/>
+        <relation type="one" fk-name="OMS_OITEM_PART" rel-entity-name="OmsOrderPart">
+            <key-map field-name="orderId"/>
+            <key-map field-name="orderPartSeqId"/>
+        </relation>
+        <relation type="one" fk-name="OMS_OITEM_PROD" rel-entity-name="PimProduct">
+            <key-map field-name="productId"/>
+        </relation>
+    </entity>
+
+    <entity entity-name="OmsOrderContactMech" package-name="org.ordermgmtsystem" title="Order Contact Mechanism">
+        <field name="orderId" type="id"/>
+        <field name="contactMechPurposeTypeId" type="id"/>
+        <field name="contactMechId" type="id"/>
+        <prim-key field="orderId"/>
+        <prim-key field="contactMechPurposeTypeId"/>
+        <prim-key field="contactMechId"/>
+        <relation type="one" fk-name="OMS_OCM_HDR" rel-entity-name="OmsOrderHeader">
+            <key-map field-name="orderId"/>
+        </relation>
+        <relation type="one" fk-name="OMS_OCM_MECH" rel-entity-name="RmContactMech">
+            <key-map field-name="contactMechId"/>
+        </relation>
+    </entity>
+
+    <entity entity-name="OmsOrderPaymentPreference" package-name="org.ordermgmtsystem" title="Order Payment Preference">
+        <field name="orderPaymentPreferenceId" type="id"/>
+        <field name="orderId" type="id"/>
+        <field name="orderPartSeqId" type="id"/>
+        <field name="paymentMethod" type="short-varchar"/>
+        <field name="amountAuthorized" type="currency-amount"/>
+        <field name="transactionId" type="long-varchar"/>
+        <field name="paymentStatus" type="id"/>
+        <field name="paymentDevice" type="short-varchar"/>
+        <field name="paymentSequenceNumber" type="short-varchar"/>
+        <prim-key field="orderPaymentPreferenceId"/>
+        <relation type="one" fk-name="OMS_OPAY_HDR" rel-entity-name="OmsOrderHeader">
+            <key-map field-name="orderId"/>
+        </relation>
+    </entity>
+
+    <entity entity-name="OmsOrderAdjustment" package-name="org.ordermgmtsystem" title="Order Adjustment">
+        <field name="orderAdjustmentId" type="id"/>
+        <field name="orderId" type="id"/>
+        <field name="orderPartSeqId" type="id"/>
+        <field name="orderItemSeqId" type="id"/>
+        <field name="priceAdjustmentType" type="id"/>
+        <field name="amount" type="currency-amount"/>
+        <field name="description" type="long-varchar"/>
+        <prim-key field="orderAdjustmentId"/>
+        <relation type="one" fk-name="OMS_OADJ_HDR" rel-entity-name="OmsOrderHeader">
+            <key-map field-name="orderId"/>
+        </relation>
+    </entity>
+
+    <!-- ===================== RETURN DOMAIN ===================== -->
+
+    <entity entity-name="OmsReturnHeader" package-name="org.ordermgmtsystem" title="Return Header">
+        <field name="returnId" type="id"/>
+        <field name="fromPartyId" type="id"/>
+        <field name="toPartyId" type="id"/>
+        <field name="returnDate" type="date-time"/>
+        <field name="statusId" type="id"/>
+        <prim-key field="returnId"/>
+        <relation type="one" fk-name="OMS_RETHDR_FPRTY" rel-entity-name="RmParty">
+            <key-map field-name="fromPartyId" rel-field-name="partyId"/>
+        </relation>
+        <relation type="one" fk-name="OMS_RETHDR_TPRTY" rel-entity-name="RmParty">
+            <key-map field-name="toPartyId" rel-field-name="partyId"/>
+        </relation>
+    </entity>
+
+    <entity entity-name="OmsReturnItem" package-name="org.ordermgmtsystem" title="Return Item">
+        <field name="returnId" type="id"/>
+        <field name="returnItemSeqId" type="id"/>
+        <field name="orderId" type="id"/>
+        <field name="orderPartSeqId" type="id"/>
+        <field name="orderItemSeqId" type="id"/>
+        <field name="returnQuantity" type="numeric"/>
+        <field name="receivedQuantity" type="numeric"/>
+        <field name="returnReasonEnumId" type="id"/>
+        <field name="returnResponseEnumId" type="id"/>
+        <field name="returnPrice" type="currency-amount"/>
+        <prim-key field="returnId"/>
+        <prim-key field="returnItemSeqId"/>
+        <relation type="one" fk-name="OMS_RETITEM_HDR" rel-entity-name="OmsReturnHeader">
+            <key-map field-name="returnId"/>
+        </relation>
+        <relation type="one" fk-name="OMS_RETITEM_OITEM" rel-entity-name="OmsOrderItem">
+            <key-map field-name="orderId"/>
+            <key-map field-name="orderPartSeqId"/>
+            <key-map field-name="orderItemSeqId"/>
+        </relation>
+    </entity>
+
+    <!-- ===================== SHIPMENT DOMAIN ===================== -->
+
+    <entity entity-name="OmsShipment" package-name="org.ordermgmtsystem" title="Shipment">
+        <field name="shipmentId" type="id"/>
+        <field name="shipmentTypeEnumId" type="id"/>
+        <field name="fromPartyId" type="id"/>
+        <field name="toPartyId" type="id"/>
+        <field name="estimatedShipDate" type="date-time"/>
+        <field name="statusId" type="id"/>
+        <field name="estimatedShipCost" type="currency-amount"/>
+        <field name="costUomId" type="id"/>
+        <field name="binLocationNumber" type="numeric"/>
+        <prim-key field="shipmentId"/>
+        <relation type="one" fk-name="OMS_SHIP_FPRTY" rel-entity-name="RmParty">
+            <key-map field-name="fromPartyId" rel-field-name="partyId"/>
+        </relation>
+        <relation type="one" fk-name="OMS_SHIP_TPRTY" rel-entity-name="RmParty">
+            <key-map field-name="toPartyId" rel-field-name="partyId"/>
+        </relation>
+    </entity>
+
+    <entity entity-name="OmsShipmentItem" package-name="org.ordermgmtsystem" title="Shipment Item">
+        <field name="shipmentId" type="id"/>
+        <field name="productId" type="id"/>
+        <field name="quantity" type="numeric"/>
+        <prim-key field="shipmentId"/>
+        <prim-key field="productId"/>
+        <relation type="one" fk-name="OMS_SHIPITM_SHIP" rel-entity-name="OmsShipment">
+            <key-map field-name="shipmentId"/>
+        </relation>
+        <relation type="one" fk-name="OMS_SHIPITM_PROD" rel-entity-name="PimProduct">
+            <key-map field-name="productId"/>
+        </relation>
+    </entity>
+
+    <entity entity-name="OmsShipmentPackage" package-name="org.ordermgmtsystem" title="Shipment Package">
+        <field name="shipmentId" type="id"/>
+        <field name="shipmentPackageSeqId" type="id"/>
+        <field name="weight" type="numeric"/>
+        <field name="weightUomId" type="id"/>
+        <prim-key field="shipmentId"/>
+        <prim-key field="shipmentPackageSeqId"/>
+        <relation type="one" fk-name="OMS_SPKG_SHIP" rel-entity-name="OmsShipment">
+            <key-map field-name="shipmentId"/>
+        </relation>
+    </entity>
+
+    <entity entity-name="OmsShipmentPackageContent" package-name="org.ordermgmtsystem" title="Shipment Package Content">
+        <field name="shipmentId" type="id"/>
+        <field name="shipmentPackageSeqId" type="id"/>
+        <field name="productId" type="id"/>
+        <field name="quantity" type="numeric"/>
+        <prim-key field="shipmentId"/>
+        <prim-key field="shipmentPackageSeqId"/>
+        <prim-key field="productId"/>
+        <relation type="one" fk-name="OMS_SPKGCNT_PKG" rel-entity-name="OmsShipmentPackage">
+            <key-map field-name="shipmentId"/>
+            <key-map field-name="shipmentPackageSeqId"/>
+        </relation>
+    </entity>
+
+    <entity entity-name="OmsShipmentRouteSegment" package-name="org.ordermgmtsystem" title="Shipment Route Segment">
+        <field name="shipmentId" type="id"/>
+        <field name="shipmentRouteSegmentSeqId" type="id"/>
+        <field name="carrierPartyId" type="id"/>
+        <field name="shipmentMethodEnumId" type="id"/>
+        <field name="originPostalContactMechId" type="id"/>
+        <field name="destPostalContactMechId" type="id"/>
+        <prim-key field="shipmentId"/>
+        <prim-key field="shipmentRouteSegmentSeqId"/>
+        <relation type="one" fk-name="OMS_SRSEG_SHIP" rel-entity-name="OmsShipment">
+            <key-map field-name="shipmentId"/>
+        </relation>
+    </entity>
+
+    <entity entity-name="OmsShipmentPackageRouteSeg" package-name="org.ordermgmtsystem" title="Shipment Package Route Segment">
+        <field name="shipmentId" type="id"/>
+        <field name="shipmentPackageSeqId" type="id"/>
+        <field name="shipmentRouteSegmentSeqId" type="id"/>
+        <field name="trackingCode" type="short-varchar"/>
+        <field name="labelImage" type="long-varchar"/>
+        <field name="labelPrinted" type="short-varchar"/>
+        <prim-key field="shipmentId"/>
+        <prim-key field="shipmentPackageSeqId"/>
+        <prim-key field="shipmentRouteSegmentSeqId"/>
+        <relation type="one" fk-name="OMS_SPKGRSEG_PKG" rel-entity-name="OmsShipmentPackage">
+            <key-map field-name="shipmentId"/>
+            <key-map field-name="shipmentPackageSeqId"/>
+        </relation>
+        <relation type="one" fk-name="OMS_SPKGRSEG_RSEG" rel-entity-name="OmsShipmentRouteSegment">
+            <key-map field-name="shipmentId"/>
+            <key-map field-name="shipmentRouteSegmentSeqId"/>
+        </relation>
+    </entity>
+
+    <entity entity-name="OmsShipmentItemSource" package-name="org.ordermgmtsystem" title="Shipment Item Source">
+        <field name="shipmentId" type="id"/>
+        <field name="orderId" type="id"/>
+        <field name="orderPartSeqId" type="id"/>
+        <field name="orderItemSeqId" type="id"/>
+        <field name="quantity" type="numeric"/>
+        <field name="statusId" type="id"/>
+        <prim-key field="shipmentId"/>
+        <prim-key field="orderId"/>
+        <prim-key field="orderPartSeqId"/>
+        <prim-key field="orderItemSeqId"/>
+        <relation type="one" fk-name="OMS_SIS_SHIP" rel-entity-name="OmsShipment">
+            <key-map field-name="shipmentId"/>
+        </relation>
+        <relation type="one" fk-name="OMS_SIS_OITEM" rel-entity-name="OmsOrderItem">
+            <key-map field-name="orderId"/>
+            <key-map field-name="orderPartSeqId"/>
+            <key-map field-name="orderItemSeqId"/>
+        </relation>
+    </entity>
+
+    <!-- ===================== VIEW ENTITIES ===================== -->
+
+    <view-entity entity-name="FindOrderView" package-name="org.ordermgmtsystem" title="Find Order View">
+        <member-entity entity-alias="OH" entity-name="OmsOrderHeader"/>
+        <member-entity entity-alias="OP" entity-name="OmsOrderPart"/>
+        <member-entity entity-alias="PER" entity-name="RmPerson"/>
+        <member-entity entity-alias="OCM" entity-name="OmsOrderContactMech"/>
+        <member-entity entity-alias="PA" entity-name="RmPostalAddress"/>
+        <member-entity entity-alias="OPP" entity-name="OmsOrderPaymentPreference"/>
+
+        <alias-all entity-alias="OH"/>
+        <alias-all entity-alias="OP">
+            <exclude field="statusId"/>
+        </alias-all>
+        <alias entity-alias="PER" name="customerFirstName" field="firstName"/>
+        <alias entity-alias="PER" name="customerLastName" field="lastName"/>
+        <alias entity-alias="PA" name="shippingAddress1" field="address1"/>
+        <alias entity-alias="PA" name="shippingAddress2" field="address2"/>
+        <alias entity-alias="PA" name="shippingCity" field="city"/>
+        <alias entity-alias="PA" name="shippingPostalCode" field="postalCode"/>
+        <alias entity-alias="OPP" name="paymentStatus" field="paymentStatus"/>
+        <alias entity-alias="OPP" name="paymentMethod" field="paymentMethod"/>
+
+        <view-link entity-alias="OH" rel-entity-alias="OP" rel-optional="true">
+            <key-map field-name="orderId"/>
+        </view-link>
+        <view-link entity-alias="OP" rel-entity-alias="PER" rel-optional="true">
+            <key-map field-name="customerPartyId" rel-field-name="partyId"/>
+        </view-link>
+        <view-link entity-alias="OH" rel-entity-alias="OCM" rel-optional="true">
+            <key-map field-name="orderId"/>
+        </view-link>
+        <view-link entity-alias="OCM" rel-entity-alias="PA" rel-optional="true">
+            <key-map field-name="contactMechId"/>
+        </view-link>
+        <view-link entity-alias="OH" rel-entity-alias="OPP" rel-optional="true">
+            <key-map field-name="orderId"/>
+        </view-link>
+    </view-entity>
+
+</entitymodel>

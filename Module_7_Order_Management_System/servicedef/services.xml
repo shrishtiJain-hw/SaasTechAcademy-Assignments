@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+
+<services xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://ofbiz.apache.org/dtds/services.xsd">
+    <description>Ordermgmtsystem Services</description>
+    <vendor>HotWax Systems</vendor>
+    <version>1.0</version>
+
+    <!-- Search Orders Service -->
+    <service name="findOrder" engine="groovy" location="component://ordermgmtsystem/script/OrderServices.groovy" invoke="findOrder">
+        <description>Search orders using various filters with pagination.</description>
+        <attribute name="orderId" type="String" mode="IN" optional="true"/>
+        <attribute name="customerName" type="String" mode="IN" optional="true"/>
+        <attribute name="fromDate" type="String" mode="IN" optional="true"/>
+        <attribute name="thruDate" type="String" mode="IN" optional="true"/>
+        <attribute name="statusId" type="String" mode="IN" optional="true"/>
+        <attribute name="paymentStatus" type="String" mode="IN" optional="true"/>
+        <attribute name="shippingAddress" type="String" mode="IN" optional="true"/>
+        <attribute name="viewIndex" type="Integer" mode="IN" optional="true"/>
+        <attribute name="viewSize" type="Integer" mode="IN" optional="true"/>
+        
+        <attribute name="orderList" type="List" mode="OUT" optional="false"/>
+        <attribute name="orderListSize" type="Integer" mode="OUT" optional="false"/>
+        <attribute name="viewIndex" type="Integer" mode="OUT" optional="false"/>
+        <attribute name="viewSize" type="Integer" mode="OUT" optional="false"/>
+    </service>
+
+    <!-- Create Order Service -->
+    <service name="createOrder" engine="groovy" location="component://ordermgmtsystem/script/OrderServices.groovy" invoke="createOrder">
+        <description>Create a new order with items and payment details.</description>
+        <attribute name="customerPartyId" type="String" mode="IN" optional="false"/>
+        <attribute name="productIdList" type="List" mode="IN" optional="false"/>
+        <attribute name="productQuantities" type="List" mode="IN" optional="false"/>
+        <attribute name="postalContactMechId" type="String" mode="IN" optional="false"/>
+        <attribute name="paymentMethod" type="String" mode="IN" optional="false"/>
+        <attribute name="paymentAmount" type="BigDecimal" mode="IN" optional="false"/>
+        <attribute name="orderSource" type="String" mode="IN" optional="true"/>
+        
+        <attribute name="orderId" type="String" mode="OUT" optional="false"/>
+    </service>
+
+    <!-- Update Shipping Address Service -->
+    <service name="updateOrderShippingAddress" engine="groovy" location="component://ordermgmtsystem/script/OrderServices.groovy" invoke="updateOrderShippingAddress">
+        <description>Update the shipping address of an order if not yet shipped.</description>
+        <attribute name="orderId" type="String" mode="IN" optional="false"/>
+        <attribute name="postalContactMechId" type="String" mode="IN" optional="false"/>
+    </service>
+
+    <!-- Create Order Item Ship Group Service -->
+    <service name="createOrderItemShipGroup" engine="groovy" location="component://ordermgmtsystem/script/OrderServices.groovy" invoke="createOrderItemShipGroup">
+        <description>Create/configure a shipping group for an order part.</description>
+        <attribute name="orderId" type="String" mode="IN" optional="false"/>
+        <attribute name="shipmentMethodEnumId" type="String" mode="IN" optional="false"/>
+        <attribute name="estimatedDeliveryDate" type="String" mode="IN" optional="true"/>
+    </service>
+</services>

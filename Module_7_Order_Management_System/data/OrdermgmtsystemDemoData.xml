@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+
+<entity-engine-xml>
+    <!-- ===================== EXTERNAL PRODUCTS ===================== -->
+    <PimProduct productId="SALES_TAX" productName="Sales Tax Service" productTypeId="SERVICE" isVirtual="N" isVariant="N"/>
+
+    <!-- ===================== EXTERNAL PARTIES & CONTACTS ===================== -->
+    <!-- John Doe -->
+    <RmParty partyId="PER123" partyTypeId="PERSON"/>
+    <RmPerson partyId="PER123" firstName="John" lastName="Doe" birthDate="1990-05-15"/>
+    <RmPartyRole partyId="PER123" roleTypeId="CUSTOMER"/>
+    
+    <RmContactMech contactMechId="10003" contactMechTypeId="POSTAL_ADDRESS"/>
+    <RmPostalAddress contactMechId="10003" toName="John Doe" address1="830 Bay Boulevard" city="Chula Vista" postalCode="91911"/>
+    <RmPartyContactMech partyId="PER123" contactMechId="10003" contactMechPurposeId="HOME" fromDate="2024-01-01 00:00:00.0"/>
+
+    <RmContactMech contactMechId="10000" contactMechTypeId="TELECOM_NUMBER"/>
+    <RmTelecomNumber contactMechId="10000" countryCode="1" areaCode="615" contactNumber="4440004"/>
+    <RmPartyContactMech partyId="PER123" contactMechId="10000" contactMechPurposeId="HOME" fromDate="2024-01-01 00:00:00.0"/>
+
+    <!-- Mark Tailor -->
+    <RmParty partyId="PER_MARK" partyTypeId="PERSON"/>
+    <RmPerson partyId="PER_MARK" firstName="Mark K" lastName="Tailor"/>
+    <RmPartyRole partyId="PER_MARK" roleTypeId="CUSTOMER"/>
+
+    <RmContactMech contactMechId="CM_MARK_EMAIL" contactMechTypeId="EMAIL_ADDRESS" infoString="mark.tailor@hotwaxmedia.com"/>
+    <RmPartyContactMech partyId="PER_MARK" contactMechId="CM_MARK_EMAIL" contactMechPurposeId="WORK" fromDate="2024-01-01 00:00:00.0"/>
+
+    <RmContactMech contactMechId="CM_MARK_POST" contactMechTypeId="POSTAL_ADDRESS"/>
+    <RmPostalAddress contactMechId="CM_MARK_POST" toName="Mark K Tailor" address1="136 S MAIN ST #A200" city="Salt Lake City" postalCode="84101"/>
+    <RmPartyContactMech partyId="PER_MARK" contactMechId="CM_MARK_POST" contactMechPurposeId="HOME" fromDate="2024-01-01 00:00:00.0"/>
+
+    <!-- Alexis River -->
+    <RmParty partyId="PER_ALEXIS" partyTypeId="PERSON"/>
+    <RmPerson partyId="PER_ALEXIS" firstName="Alexis J" lastName="River"/>
+    <RmPartyRole partyId="PER_ALEXIS" roleTypeId="CUSTOMER"/>
+
+    <RmContactMech contactMechId="CM_ALEXIS_POST" contactMechTypeId="POSTAL_ADDRESS"/>
+    <RmPostalAddress contactMechId="CM_ALEXIS_POST" toName="Alexis J River" address1="123 Broadway" city="New York" postalCode="10012"/>
+    <RmPartyContactMech partyId="PER_ALEXIS" contactMechId="CM_ALEXIS_POST" contactMechPurposeId="HOME" fromDate="2024-01-01 00:00:00.0"/>
+
+    <!-- Vendor VEN456 -->
+    <RmParty partyId="VEN456" partyTypeId="ORGANIZATION"/>
+    <RmOrganization partyId="VEN456" organizationName="Vendor VEN456"/>
+    <RmPartyRole partyId="VEN456" roleTypeId="VENDOR"/>
+
+    <RmContactMech contactMechId="10002" contactMechTypeId="POSTAL_ADDRESS"/>
+    <RmPostalAddress contactMechId="10002" toName="Vendor Supplier" address1="456 Supplier Way" city="San Francisco" postalCode="94107"/>
+    <RmPartyContactMech partyId="VEN456" contactMechId="10002" contactMechPurposeId="OFFICE" fromDate="2024-01-01 00:00:00.0"/>
+
+    <!-- ABC Organization -->
+    <RmParty partyId="ORG_ABC" partyTypeId="ORGANIZATION"/>
+    <RmOrganization partyId="ORG_ABC" organizationName="ABC Organization"/>
+    <RmPartyRole partyId="ORG_ABC" roleTypeId="INTERNAL_ORGANIZATION"/>
+
+    <RmContactMech contactMechId="LOC001" contactMechTypeId="POSTAL_ADDRESS"/>
+    <RmPostalAddress contactMechId="LOC001" toName="ABC SoHo Store" address1="123 Broadway" city="New York" postalCode="10012"/>
+    <RmPartyContactMech partyId="ORG_ABC" contactMechId="LOC001" contactMechPurposeId="OFFICE" fromDate="2024-01-01 00:00:00.0"/>
+
+    <!-- Carrier CARRIER001 -->
+    <RmParty partyId="CARRIER001" partyTypeId="ORGANIZATION"/>
+    <RmOrganization partyId="CARRIER001" organizationName="Carrier CARRIER001"/>
+    <RmPartyRole partyId="CARRIER001" roleTypeId="CARRIER"/>
+
+    <!-- Dest location for shipping -->
+    <RmContactMech contactMechId="LOC002" contactMechTypeId="POSTAL_ADDRESS"/>
+    <RmPostalAddress contactMechId="LOC002" toName="John Doe Home" address1="830 Bay Boulevard" city="Chula Vista" postalCode="91911"/>
+
+    <!-- ===================== ORDER HEADERS & PARTS ===================== -->
+    <!-- Sales Order ORD789 -->
+    <OmsOrderHeader orderId="ORD789" statusId="PARTIALLY_FULFILLED" orderDate="2024-09-15 10:30:00.0" orderSource="WEB" orderType="SALES_ORDER" orderSubTotal="2399.98" taxSubTotal="120.00" discount="0.0" currency="USD" canReturn="TRUE" displayOrderId="ORD789" storeId="STORE_001" email="john.doe@example.com"/>
+    
+    <OmsOrderPart orderId="ORD789" orderPartSeqId="00001" customerPartyId="PER123" postalContactMechId="10003" statusId="PART_COMPLETED" partTotal="1364.99" shipmentMethodEnumId="GROUND" estimatedDeliveryDate="2024-09-18 18:00:00.0"/>
+    <OmsOrderPart orderId="ORD789" orderPartSeqId="00002" customerPartyId="PER123" postalContactMechId="10003" statusId="PART_CREATED" partTotal="1154.99" shipmentMethodEnumId="GROUND" estimatedDeliveryDate="2024-09-20 18:00:00.0"/>
+
+    <OmsOrderItem orderId="ORD789" orderPartSeqId="00001" orderItemSeqId="00001" productId="PROD20001" quantity="1" unitPrice="1299.99" itemStatus="ORDER_COMPLETED" externalId="ORD789-1" returnsEligibility="ELIGIBLE"/>
+    <OmsOrderItem orderId="ORD789" orderPartSeqId="00001" orderItemSeqId="00003" productId="SALES_TAX" quantity="1" unitPrice="65.00" itemStatus="ORDER_COMPLETED" externalId="ORD789-3"/>
+    
+    <OmsOrderItem orderId="ORD789" orderPartSeqId="00002" orderItemSeqId="00002" productId="PROD10002" quantity="1" unitPrice="1099.99" itemStatus="ORDER_CREATED" externalId="ORD789-2" returnsEligibility="ELIGIBLE"/>
+    <OmsOrderItem orderId="ORD789" orderPartSeqId="00002" orderItemSeqId="00004" productId="SALES_TAX" quantity="1" unitPrice="55.00" itemStatus="ORDER_CREATED" externalId="ORD789-4"/>
+
+    <OmsOrderContactMech orderId="ORD789" contactMechPurposeTypeId="SHIPPING_LOCATION" contactMechId="10003"/>
+    <OmsOrderPaymentPreference orderPaymentPreferenceId="PAY_PREF_001" orderId="ORD789" orderPartSeqId="00001" paymentMethod="Miscellaneous" amountAuthorized="1364.99" transactionId="TX-20240915-01" paymentStatus="PAY_APPROVED" paymentDevice="NoReader" paymentSequenceNumber="1"/>
+    <OmsOrderPaymentPreference orderPaymentPreferenceId="PAY_PREF_002" orderId="ORD789" orderPartSeqId="00002" paymentMethod="Miscellaneous" amountAuthorized="1154.99" transactionId="TX-20240915-02" paymentStatus="PAY_AUTHORIZED" paymentDevice="NoReader" paymentSequenceNumber="2"/>
+
+    <!-- Purchase Order ORD123 -->
+    <OmsOrderHeader orderId="ORD123" statusId="ORDER_CREATED" orderDate="2024-09-19 14:15:00.0" orderSource="IN_STORE" orderType="PURCHASE_ORDER" orderSubTotal="64999.50" taxSubTotal="0.0" discount="0.0" currency="USD" canReturn="FALSE" displayOrderId="ORD123" storeId="STORE_001" email="procurement@abc.com"/>
+    
+    <OmsOrderPart orderId="ORD123" orderPartSeqId="00001" vendorPartyId="VEN456" postalContactMechId="10002" telecomContactMechId="10000" statusId="PART_PLACED" partTotal="64999.50"/>
+
+    <OmsOrderItem orderId="ORD123" orderPartSeqId="00001" orderItemSeqId="00001" productId="PROD20001" quantity="50" unitPrice="1299.99" itemStatus="ORDER_CREATED" externalId="ORD123-1"/>
+    
+    <OmsOrderContactMech orderId="ORD123" contactMechPurposeTypeId="SHIPPING_LOCATION" contactMechId="10002"/>
+    <OmsOrderPaymentPreference orderPaymentPreferenceId="PAY_PREF_003" orderId="ORD123" orderPartSeqId="00001" paymentMethod="Credit Card" amountAuthorized="64999.50" transactionId="TX-20240919-01" paymentStatus="PAY_AUTHORIZED" paymentDevice="NoReader" paymentSequenceNumber="1"/>
+
+    <!-- ===================== RETURNS ===================== -->
+    <OmsReturnHeader returnId="RET123" fromPartyId="PER123" toPartyId="ORG_ABC" returnDate="2024-09-20 09:00:00.0" statusId="RETURN_COMPLETED"/>
+    <OmsReturnItem returnId="RET123" returnItemSeqId="00001" orderId="ORD789" orderPartSeqId="00001" orderItemSeqId="00001" returnQuantity="1" receivedQuantity="1" returnReasonEnumId="DEFECTIVE" returnResponseEnumId="REFUND" returnPrice="1299.99"/>
+    <OmsReturnItem returnId="RET123" returnItemSeqId="00002" orderId="ORD789" orderPartSeqId="00001" orderItemSeqId="00003" returnQuantity="1" receivedQuantity="1" returnPrice="65.00"/>
+
+    <!-- ===================== SHIPMENTS ===================== -->
+    <OmsShipment shipmentId="SHIP001" shipmentTypeEnumId="SALES_SHIPMENT" fromPartyId="ORG_ABC" toPartyId="PER123" estimatedShipDate="2024-09-16 08:00:00.0" statusId="PACKED" estimatedShipCost="15.00" costUomId="USD" binLocationNumber="10"/>
+    <OmsShipmentItem shipmentId="SHIP001" productId="PROD20001" quantity="1"/>
+    <OmsShipmentPackage shipmentId="SHIP001" shipmentPackageSeqId="00001" weight="5" weightUomId="LBS"/>
+    <OmsShipmentPackageContent shipmentId="SHIP001" shipmentPackageSeqId="00001" productId="PROD20001" quantity="1"/>
+    <OmsShipmentRouteSegment shipmentId="SHIP001" shipmentRouteSegmentSeqId="SEG001" carrierPartyId="CARRIER001" shipmentMethodEnumId="GROUND" originPostalContactMechId="LOC001" destPostalContactMechId="LOC002"/>
+    <OmsShipmentPackageRouteSeg shipmentId="SHIP001" shipmentPackageSeqId="00001" shipmentRouteSegmentSeqId="SEG001" trackingCode="4455667788" labelImage="/images/shippingLabel/4455667788.jpeg" labelPrinted="PRINTED"/>
+    <OmsShipmentItemSource shipmentId="SHIP001" orderId="ORD789" orderPartSeqId="00001" orderItemSeqId="00001" quantity="1" statusId="PACKED"/>
+</entity-engine-xml>

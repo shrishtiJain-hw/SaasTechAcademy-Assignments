@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+
+<entity-engine-xml>
+    <!-- ===================== STATUS ITEMS ===================== -->
+    <StatusType description="Order Status" hasTable="N" statusTypeId="OMS_ORDER_STATUS"/>
+    <StatusItem description="Created" sequenceId="01" statusId="ORDER_CREATED" statusTypeId="OMS_ORDER_STATUS"/>
+    <StatusItem description="Approved" sequenceId="02" statusId="ORDER_APPROVED" statusTypeId="OMS_ORDER_STATUS"/>
+    <StatusItem description="Partially Fulfilled" sequenceId="03" statusId="PARTIALLY_FULFILLED" statusTypeId="OMS_ORDER_STATUS"/>
+    <StatusItem description="Completed" sequenceId="04" statusId="ORDER_COMPLETED" statusTypeId="OMS_ORDER_STATUS"/>
+    <StatusItem description="Cancelled" sequenceId="05" statusId="ORDER_CANCELLED" statusTypeId="OMS_ORDER_STATUS"/>
+
+    <StatusType description="Order Part Status" hasTable="N" statusTypeId="OMS_PART_STATUS"/>
+    <StatusItem description="Created" sequenceId="01" statusId="PART_CREATED" statusTypeId="OMS_PART_STATUS"/>
+    <StatusItem description="Placed" sequenceId="02" statusId="PART_PLACED" statusTypeId="OMS_PART_STATUS"/>
+    <StatusItem description="Completed" sequenceId="03" statusId="PART_COMPLETED" statusTypeId="OMS_PART_STATUS"/>
+
+    <StatusType description="Order Payment Status" hasTable="N" statusTypeId="OMS_PAY_STATUS"/>
+    <StatusItem description="Approved" sequenceId="01" statusId="PAY_APPROVED" statusTypeId="OMS_PAY_STATUS"/>
+    <StatusItem description="Authorized" sequenceId="02" statusId="PAY_AUTHORIZED" statusTypeId="OMS_PAY_STATUS"/>
+    <StatusItem description="Declined" sequenceId="03" statusId="PAY_DECLINED" statusTypeId="OMS_PAY_STATUS"/>
+</entity-engine-xml>
