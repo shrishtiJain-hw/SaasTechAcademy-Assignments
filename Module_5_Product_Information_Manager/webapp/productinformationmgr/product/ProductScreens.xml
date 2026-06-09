@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<screens xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://ofbiz.apache.org/Widget-Screen" xsi:schemaLocation="http://ofbiz.apache.org/Widget-Screen http://ofbiz.apache.org/dtds/widget-screen.xsd">
+
+    <!-- FIND & CREATE PRODUCTS -->
+    <screen name="FindProduct">
+        <section>
+            <actions>
+                <set field="titleProperty" value="Find Product"/>
+                <set field="headerItem" value="FindProduct"/>
+            </actions>
+            <widgets>
+                <decorator-screen name="ProductinformationmgrCommonDecorator" location="component://productinformationmgr/widget/CommonScreens.xml">
+                    <decorator-section name="body">
+                        <!-- Navigation Bar to switch between Products and Facilities -->
+                        <container style="button-bar">
+                            <link target="FindProduct" text="Manage Products" style="buttontext"/>
+                            <link target="FindFacility" text="Manage Facilities" style="buttontext"/>
+                        </container>
+
+                        <screenlet title="Create Product">
+                            <include-form name="ProductForm" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                        </screenlet>
+                        <screenlet title="Create Category Type (Taxonomy)">
+                            <include-form name="CategoryForm" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                        </screenlet>
+                        <screenlet title="Create Feature (Color/Memory/Size)">
+                            <include-form name="FeatureForm" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                        </screenlet>
+                        <screenlet title="Products List">
+                            <include-form name="ListProducts" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                        </screenlet>
+                    </decorator-section>
+                </decorator-screen>
+            </widgets>
+        </section>
+    </screen>
+
+    <!-- DETAILED PROFILE & EDIT OF A SINGLE PRODUCT -->
+    <screen name="EditProduct">
+        <section>
+            <actions>
+                <set field="titleProperty" value="Edit Product Details"/>
+                <script location="component://productinformationmgr/script/GetProductDetails.groovy"/>
+            </actions>
+            <widgets>
+                <decorator-screen name="ProductinformationmgrCommonDecorator" location="component://productinformationmgr/widget/CommonScreens.xml">
+                    <decorator-section name="body">
+                        <container style="button-bar">
+                            <link target="FindProduct" text="Back to Products List" style="buttontext"/>
+                        </container>
+
+                        <screenlet title="Edit Product Details">
+                            <include-form name="EditProduct" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                        </screenlet>
+
+                        <!-- Product Pricing -->
+                        <screenlet title="Product Prices">
+                            <include-form name="ListProductPrices" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                            <container style="margin-top:10px;">
+                                <label text="Add Price:" style="h3"/>
+                                <include-form name="AddProductPrice" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                            </container>
+                        </screenlet>
+
+                        <!-- Product Content (Images, Descriptions) -->
+                        <screenlet title="Product Content">
+                            <include-form name="ListProductContents" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                            <container style="margin-top:10px;">
+                                <label text="Add Content:" style="h3"/>
+                                <include-form name="AddProductContent" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                            </container>
+                        </screenlet>
+
+                        <!-- Product Dimensions -->
+                        <screenlet title="Product Dimensions">
+                            <include-form name="ListProductDimensions" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                            <container style="margin-top:10px;">
+                                <label text="Add Dimension:" style="h3"/>
+                                <include-form name="AddProductDimension" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                            </container>
+                        </screenlet>
+
+                        <!-- Categories -->
+                        <screenlet title="Categorizations (Taxonomy / Store Groups)">
+                            <include-form name="ListProductCategories" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                            <container style="margin-top:10px;">
+                                <label text="Assign Category Member:" style="h3"/>
+                                <include-form name="AddProductCategoryMember" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                            </container>
+                        </screenlet>
+
+                        <!-- Features -->
+                        <screenlet title="Product Features">
+                            <include-form name="ListProductFeatures" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                            <container style="margin-top:10px;">
+                                <label text="Apply Feature:" style="h3"/>
+                                <include-form name="AddProductFeatureAppl" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                            </container>
+                        </screenlet>
+
+                        <!-- Product Associations -->
+                        <screenlet title="Product to Product Associations (Variants &amp; Components)">
+                            <include-form name="ListProductAssocs" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                            <container style="margin-top:10px;">
+                                <label text="Establish Product Association:" style="h3"/>
+                                <include-form name="AddProductAssoc" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                            </container>
+                        </screenlet>
+
+                        <!-- Facilities Stock Setup -->
+                        <screenlet title="Facilities Stock Setup">
+                            <include-form name="ListProductFacilities" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                            <container style="margin-top:10px;">
+                                <label text="Link Product to Stock Facility:" style="h3"/>
+                                <include-form name="AddProductFacility" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                            </container>
+                        </screenlet>
+
+                        <!-- Facility Stock Locations -->
+                        <screenlet title="Facility Storage Locations Mapping">
+                            <include-form name="ListProductFacilityLocations" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                            <container style="margin-top:10px;">
+                                <label text="Assign Stock Storage Location:" style="h3"/>
+                                <include-form name="AddProductFacilityLocation" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                            </container>
+                        </screenlet>
+
+                    </decorator-section>
+                </decorator-screen>
+            </widgets>
+        </section>
+    </screen>
+
+    <!-- FIND & CREATE FACILITIES -->
+    <screen name="FindFacility">
+        <section>
+            <actions>
+                <set field="titleProperty" value="Find Facility"/>
+                <set field="headerItem" value="FindFacility"/>
+            </actions>
+            <widgets>
+                <decorator-screen name="ProductinformationmgrCommonDecorator" location="component://productinformationmgr/widget/CommonScreens.xml">
+                    <decorator-section name="body">
+                        <!-- Navigation Bar -->
+                        <container style="button-bar">
+                            <link target="FindProduct" text="Manage Products" style="buttontext"/>
+                            <link target="FindFacility" text="Manage Facilities" style="buttontext"/>
+                        </container>
+
+                        <screenlet title="Create Facility">
+                            <include-form name="FacilityForm" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                        </screenlet>
+                        <screenlet title="Create Facility Group">
+                            <include-form name="FacilityGroupForm" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                        </screenlet>
+                        <screenlet title="Facilities List">
+                            <include-form name="ListFacilities" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                        </screenlet>
+                    </decorator-section>
+                </decorator-screen>
+            </widgets>
+        </section>
+    </screen>
+
+    <!-- DETAILED PROFILE & EDIT OF A SINGLE FACILITY -->
+    <screen name="EditFacility">
+        <section>
+            <actions>
+                <set field="titleProperty" value="Edit Facility Details"/>
+                <script location="component://productinformationmgr/script/GetFacilityDetails.groovy"/>
+            </actions>
+            <widgets>
+                <decorator-screen name="ProductinformationmgrCommonDecorator" location="component://productinformationmgr/widget/CommonScreens.xml">
+                    <decorator-section name="body">
+                        <container style="button-bar">
+                            <link target="FindFacility" text="Back to Facilities List" style="buttontext"/>
+                        </container>
+
+                        <screenlet title="Edit Facility Details">
+                            <include-form name="EditFacility" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                        </screenlet>
+
+                        <!-- Locations -->
+                        <screenlet title="Facility Locations (Aisles/Sections/Levels)">
+                            <include-form name="ListFacilityLocations" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                            <container style="margin-top:10px;">
+                                <label text="Add Storage Location:" style="h3"/>
+                                <include-form name="AddFacilityLocation" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                            </container>
+                        </screenlet>
+
+                        <!-- Facility Associated Parties (John Doe Employee etc) -->
+                        <screenlet title="Facility Associated Parties (Staff / Owner / Manager)">
+                            <include-form name="ListFacilityParties" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                            <container style="margin-top:10px;">
+                                <label text="Associate Party with Facility:" style="h3"/>
+                                <include-form name="AddFacilityParty" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                            </container>
+                        </screenlet>
+
+                        <!-- Facility Group Memberships -->
+                        <screenlet title="Facility Group Memberships (Fulfillment Groups)">
+                            <include-form name="ListFacilityGroupMembers" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                            <container style="margin-top:10px;">
+                                <label text="Join Facility Group:" style="h3"/>
+                                <include-form name="AddFacilityGroupMember" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                            </container>
+                        </screenlet>
+
+                        <!-- Facility Contact Mechanisms -->
+                        <screenlet title="Facility Contact Mechanisms (Addresses &amp; Phones)">
+                            <include-form name="ListFacilityContactMechs" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                            <container style="margin-top:10px;">
+                                <label text="Add Contact Mechanism:" style="h3"/>
+                                <include-form name="AddFacilityContactMech" location="component://productinformationmgr/webapp/productinformationmgr/product/ProductForms.xml"/>
+                            </container>
+                        </screenlet>
+
+                    </decorator-section>
+                </decorator-screen>
+            </widgets>
+        </section>
+    </screen>
+
+</screens>

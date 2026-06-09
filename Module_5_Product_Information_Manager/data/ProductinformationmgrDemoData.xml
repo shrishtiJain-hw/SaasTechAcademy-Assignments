@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-engine-xml>
+    <!-- ========================================================= -->
+    <!-- Custom RmParty/RmPerson/RmContactMech data needed for FKs -->
+    <!-- ========================================================= -->
+    
+    <!-- John Doe Employee -->
+    <RmParty partyId="PER123" partyTypeId="PERSON"/>
+    <RmPerson partyId="PER123" firstName="John" lastName="Doe"/>
+    <RmPartyRole partyId="PER123" roleTypeId="EMPLOYEE"/>
+
+    <!-- Facility Contact Mechs -->
+    <RmContactMech contactMechId="10000" contactMechTypeId="TELECOM_NUMBER"/>
+    <RmTelecomNumber contactMechId="10000" countryCode="1" areaCode="800" contactNumber="5550199"/>
+    <RmContactMechPurpose contactMechPurposeId="PRIMARY_PHONE" description="Primary Phone"/>
+
+    <RmContactMech contactMechId="10002" contactMechTypeId="POSTAL_ADDRESS"/>
+    <RmPostalAddress contactMechId="10002" toName="Main Warehouse" address1="100 Logistics Blvd" city="Salt Lake City" postalCode="84101"/>
+    <RmContactMechPurpose contactMechPurposeId="SHIPPING_LOCATION" description="Shipping Location"/>
+
+    <RmContactMech contactMechId="10004" contactMechTypeId="POSTAL_ADDRESS"/>
+    <RmPostalAddress contactMechId="10004" toName="SoHo Store" address1="456 Broadway" city="New York" postalCode="10012"/>
+    <RmContactMechPurpose contactMechPurposeId="PRIMARY_LOCATION" description="Primary Location"/>
+
+    <!-- ========================================================= -->
+    <!-- PimProduct & Associations Data                           -->
+    <!-- ========================================================= -->
+    
+    <PimProduct productId="PROD10000" productName="Smartphone" productTypeId="FINISHED_GOOD" isVirtual="Y" isVariant="N"/>
+    <PimProduct productId="PROD10001" productName="Smartphone-128GB" productTypeId="FINISHED_GOOD" isVirtual="N" isVariant="Y"/>
+    <PimProduct productId="PROD10002" productName="Smartphone-256GB" productTypeId="FINISHED_GOOD" isVirtual="N" isVariant="Y"/>
+    
+    <PimProduct productId="PROD20000" productName="Laptop" productTypeId="FINISHED_GOOD" isVirtual="Y" isVariant="N"/>
+    <PimProduct productId="PROD20001" productName="Laptop-BLACK" productTypeId="FINISHED_GOOD" isVirtual="N" isVariant="Y"/>
+    
+    <PimProduct productId="PROM001" productName="Laptop-Phone-Promotional-Package" productTypeId="MARKETING_PACKAGE" isVirtual="Y" isVariant="N"/>
+
+    <!-- Content -->
+    <PimProductContent productContentId="CON100" productId="PROD10000" productContentTypeId="IMAGE" contentLocation="/images/smartphone.jpg"/>
+    <PimProductContent productContentId="CON200" productId="PROD10000" productContentTypeId="DESCRIPTION" contentLocation="/descriptions/smartphone_en.txt"/>
+    <PimProductContent productContentId="CON300" productId="PROD20000" productContentTypeId="IMAGE" contentLocation="/images/laptop.jpg"/>
+
+    <!-- Price -->
+    <PimProductPrice productPriceId="PRC_PHN1" productId="PROD10001" productPriceTypeId="LIST_PRICE" price="799.99"/>
+    <PimProductPrice productPriceId="PRC_PHN2" productId="PROD10002" productPriceTypeId="LIST_PRICE" price="1099.99"/>
+    <PimProductPrice productPriceId="PRC_PHN1_PROM1" productId="PROD10002" productPriceTypeId="PROMOTIONAL_PRICE" price="999.99"/>
+    <PimProductPrice productPriceId="PRC_LPT1" productId="PROD20000" productPriceTypeId="LIST_PRICE" price="1299.99"/>
+    <PimProductPrice productPriceId="PRC_PHN_LPT_PROM1" productId="PROM001" productPriceTypeId="PROMOTIONAL_PRICE" price="1999.99"/>
+
+    <!-- Dimensions -->
+    <PimProductDimension productId="PROD10000" dimensionTypeId="WEIGHT" dimensionValue="6.60" valueUomId="OUNCES"/>
+    <PimProductDimension productId="PROD10001" dimensionTypeId="WEIGHT" dimensionValue="2.5" valueUomId="LBS"/>
+
+    <!-- Product Associations -->
+    <PimProductAssoc productId="PROD10000" toProductId="PROD10001" productAssocTypeId="VARIANT" fromDate="2023-01-01 00:00:00.000"/>
+    <PimProductAssoc productId="PROD10000" toProductId="PROD10002" productAssocTypeId="VARIANT" fromDate="2023-01-01 00:00:00.000"/>
+    <PimProductAssoc productId="PROD20000" toProductId="PROD20001" productAssocTypeId="VARIANT" fromDate="2023-09-01 00:00:00.000"/>
+    <PimProductAssoc productId="PROM001" toProductId="PROD10001" productAssocTypeId="COMPONENT" fromDate="2023-10-01 00:00:00.000"/>
+    <PimProductAssoc productId="PROM001" toProductId="PROD20001" productAssocTypeId="COMPONENT" fromDate="2023-10-01 00:00:00.000"/>
+
+    <!-- ========================================================= -->
+    <!-- PimProductCategory & Members Data                        -->
+    <!-- ========================================================= -->
+    
+    <PimProductCategory productCategoryId="BROWSE_ROOT" productCategoryTypeId="CATALOG_CATEGORY" categoryName="Browse Root"/>
+    <PimProductCategory productCategoryId="SEARCH" productCategoryTypeId="SEARCH_CATEGORY" categoryName="Search"/>
+    <PimProductCategory productCategoryId="VIEW_ALLOW" productCategoryTypeId="CATALOG_CATEGORY" categoryName="View Allow"/>
+    <PimProductCategory productCategoryId="PURCHASE_ALLOW" productCategoryTypeId="CATALOG_CATEGORY" categoryName="Purchase Allow"/>
+    <PimProductCategory productCategoryId="LUXURY_TAX_CATEGORY" productCategoryTypeId="TAX_CATEGORY" categoryName="Luxury Tax"/>
+    <PimProductCategory productCategoryId="PROMOTIONS" productCategoryTypeId="CATALOG_CATEGORY" parentProductCategoryId="BROWSE_ROOT" categoryName="Promotions"/>
+    <PimProductCategory productCategoryId="MOST_POPULAR" productCategoryTypeId="CATALOG_CATEGORY" parentProductCategoryId="BROWSE_ROOT" categoryName="Most Popular"/>
+    <PimProductCategory productCategoryId="WHATS_NEW" productCategoryTypeId="CATALOG_CATEGORY" parentProductCategoryId="BROWSE_ROOT" categoryName="Whats New"/>
+
+    <!-- Category Members -->
+    <PimProductCategoryMember productId="PROD10000" productCategoryId="BROWSE_ROOT" fromDate="2023-01-01 00:00:00.000"/>
+    <PimProductCategoryMember productId="PROD10001" productCategoryId="BROWSE_ROOT" fromDate="2023-01-01 00:00:00.000"/>
+    <PimProductCategoryMember productId="PROD10002" productCategoryId="BROWSE_ROOT" fromDate="2023-01-01 00:00:00.000"/>
+    <PimProductCategoryMember productId="PROD20000" productCategoryId="BROWSE_ROOT" fromDate="2023-01-01 00:00:00.000"/>
+    <PimProductCategoryMember productId="PROD20001" productCategoryId="BROWSE_ROOT" fromDate="2023-01-01 00:00:00.000"/>
+    <PimProductCategoryMember productId="PROM001" productCategoryId="BROWSE_ROOT" fromDate="2023-10-01 00:00:00.000"/>
+
+    <PimProductCategoryMember productId="PROD10000" productCategoryId="SEARCH" fromDate="2023-06-01 00:00:00.000"/>
+    <PimProductCategoryMember productId="PROD10001" productCategoryId="SEARCH" fromDate="2023-06-01 00:00:00.000"/>
+    <PimProductCategoryMember productId="PROD10002" productCategoryId="SEARCH" fromDate="2023-08-01 00:00:00.000"/>
+    <PimProductCategoryMember productId="PROD20000" productCategoryId="SEARCH" fromDate="2023-09-01 00:00:00.000"/>
+    <PimProductCategoryMember productId="PROD20001" productCategoryId="SEARCH" fromDate="2023-09-01 00:00:00.000"/>
+    <PimProductCategoryMember productId="PROM001" productCategoryId="SEARCH" fromDate="2023-10-01 00:00:00.000"/>
+
+    <PimProductCategoryMember productId="PROD10000" productCategoryId="VIEW_ALLOW" fromDate="2023-06-01 00:00:00.000"/>
+    <PimProductCategoryMember productId="PROD10001" productCategoryId="VIEW_ALLOW" fromDate="2023-06-01 00:00:00.000"/>
+    <PimProductCategoryMember productId="PROD10002" productCategoryId="VIEW_ALLOW" fromDate="2023-08-01 00:00:00.000"/>
+    <PimProductCategoryMember productId="PROD20000" productCategoryId="VIEW_ALLOW" fromDate="2023-09-01 00:00:00.000"/>
+    <PimProductCategoryMember productId="PROD20001" productCategoryId="VIEW_ALLOW" fromDate="2023-09-01 00:00:00.000"/>
+    <PimProductCategoryMember productId="PROM001" productCategoryId="VIEW_ALLOW" fromDate="2023-10-01 00:00:00.000" thruDate="2023-11-15 00:00:00.000"/>
+
+    <PimProductCategoryMember productId="PROD10000" productCategoryId="PURCHASE_ALLOW" fromDate="2023-06-15 00:00:00.000"/>
+    <PimProductCategoryMember productId="PROD10001" productCategoryId="PURCHASE_ALLOW" fromDate="2023-06-15 00:00:00.000"/>
+    <PimProductCategoryMember productId="PROD10002" productCategoryId="PURCHASE_ALLOW" fromDate="2023-08-15 00:00:00.000"/>
+    <PimProductCategoryMember productId="PROD20000" productCategoryId="PURCHASE_ALLOW" fromDate="2023-09-15 00:00:00.000"/>
+    <PimProductCategoryMember productId="PROD20001" productCategoryId="PURCHASE_ALLOW" fromDate="2023-09-15 00:00:00.000"/>
+    <PimProductCategoryMember productId="PROM001" productCategoryId="PURCHASE_ALLOW" fromDate="2023-10-01 00:00:00.000" thruDate="2023-11-15 00:00:00.000"/>
+
+    <PimProductCategoryMember productId="PROD10002" productCategoryId="LUXURY_TAX_CATEGORY" fromDate="2023-08-15 00:00:00.000"/>
+    <PimProductCategoryMember productId="PROD20001" productCategoryId="LUXURY_TAX_CATEGORY" fromDate="2023-09-15 00:00:00.000"/>
+
+    <PimProductCategoryMember productId="PROD10002" productCategoryId="PROMOTIONS" fromDate="2023-08-15 00:00:00.000" thruDate="2023-08-31 00:00:00.000"/>
+    <PimProductCategoryMember productId="PROM001" productCategoryId="PROMOTIONS" fromDate="2023-10-01 00:00:00.000" thruDate="2023-11-15 00:00:00.000"/>
+
+    <PimProductCategoryMember productId="PROD10002" productCategoryId="MOST_POPULAR" fromDate="2023-09-01 00:00:00.000"/>
+
+    <PimProductCategoryMember productId="PROD20000" productCategoryId="WHATS_NEW" fromDate="2023-09-01 00:00:00.000" thruDate="2023-10-31 00:00:00.000"/>
+    <PimProductCategoryMember productId="PROD20001" productCategoryId="WHATS_NEW" fromDate="2023-09-01 00:00:00.000" thruDate="2023-10-31 00:00:00.000"/>
+
+    <!-- ========================================================= -->
+    <!-- PimProductFeature & Applications Data                    -->
+    <!-- ========================================================= -->
+    
+    <PimProductFeature productFeatureId="128GB" productFeatureTypeId="MEMORY"/>
+    <PimProductFeature productFeatureId="256GB" productFeatureTypeId="MEMORY"/>
+    <PimProductFeature productFeatureId="BLACK" productFeatureTypeId="COLOR"/>
+
+    <!-- Applications -->
+    <PimProductFeatureAppl productId="PROD10000" productFeatureId="128GB" fromDate="2023-06-01 00:00:00.000" applTypeEnumId="SELECTABLE_FEATURE"/>
+    <PimProductFeatureAppl productId="PROD10000" productFeatureId="256GB" fromDate="2023-06-01 00:00:00.000" applTypeEnumId="SELECTABLE_FEATURE"/>
+    <PimProductFeatureAppl productId="PROD10001" productFeatureId="128GB" fromDate="2023-06-01 00:00:00.000" applTypeEnumId="STANDARD_FEATURE"/>
+    <PimProductFeatureAppl productId="PROD10002" productFeatureId="256GB" fromDate="2023-08-01 00:00:00.000" applTypeEnumId="STANDARD_FEATURE"/>
+    <PimProductFeatureAppl productId="PROD20000" productFeatureId="BLACK" fromDate="2023-09-01 00:00:00.000" applTypeEnumId="STANDARD_FEATURE"/>
+    <PimProductFeatureAppl productId="PROD20001" productFeatureId="BLACK" fromDate="2023-09-01 00:00:00.000" applTypeEnumId="STANDARD_FEATURE"/>
+
+    <!-- ========================================================= -->
+    <!-- PimFacility Data Model                                    -->
+    <!-- ========================================================= -->
+    
+    <PimFacility facilityId="FAC001" facilityTypeId="WAREHOUSE" facilityName="Main Warehouse"/>
+    <PimFacility facilityId="FAC002" facilityTypeId="STORE" facilityName="SoHo Store" parentFacilityId="FAC001"/>
+
+    <!-- Locations -->
+    <PimFacilityLocation facilityId="FAC001" locationSeqId="1" areaId="AREA1" aisleId="AISLE1" sectionId="SEC1" levelId="LEVEL1" positionId="POS1"/>
+    <PimFacilityLocation facilityId="FAC001" locationSeqId="2" areaId="AREA1" aisleId="AISLE1" sectionId="SEC1" levelId="LEVEL1" positionId="POS2"/>
+    <PimFacilityLocation facilityId="FAC001" locationSeqId="3" areaId="AREA1" aisleId="AISLE1" sectionId="SEC2" levelId="LEVEL1" positionId="POS1"/>
+
+    <!-- Product Stock Allocations -->
+    <PimProductFacility facilityId="FAC001" productId="PROD10001"/>
+    <PimProductFacility facilityId="FAC001" productId="PROD10002"/>
+    <PimProductFacility facilityId="FAC001" productId="PROD20001"/>
+
+    <!-- Product Specific Stock Storage Locations -->
+    <PimProductFacilityLocation productId="PROD10001" facilityId="FAC001" locationSeqId="1"/>
+    <PimProductFacilityLocation productId="PROD10002" facilityId="FAC001" locationSeqId="2"/>
+    <PimProductFacilityLocation productId="PROD20001" facilityId="FAC001" locationSeqId="3"/>
+
+    <!-- Facility Party Mapping -->
+    <PimFacilityParty facilityId="FAC001" partyId="PER123" roleTypeId="EMPLOYEE"/>
+
+    <!-- Facility Group Memberships -->
+    <PimFacilityGroup facilityGroupId="GRP001" facilityGroupTypeId="FULFILLMENT" facilityGroupName="Fulfillment Group"/>
+    <PimFacilityGroupMember facilityGroupId="GRP001" facilityId="FAC001"/>
+    <PimFacilityGroupMember facilityGroupId="GRP001" facilityId="FAC002"/>
+
+    <!-- Contact Mechs -->
+    <PimFacilityContactMech facilityId="FAC001" contactMechId="10002" contactMechPurposeTypeId="SHIPPING_LOCATION" fromDate="2000-01-01 00:00:00.000"/>
+    <PimFacilityContactMech facilityId="FAC001" contactMechId="10000" contactMechPurposeTypeId="PRIMARY_PHONE" fromDate="2000-01-01 00:00:00.000"/>
+    <PimFacilityContactMech facilityId="FAC002" contactMechId="10004" contactMechPurposeTypeId="PRIMARY_LOCATION" fromDate="2000-01-01 00:00:00.000"/>
+</entity-engine-xml>

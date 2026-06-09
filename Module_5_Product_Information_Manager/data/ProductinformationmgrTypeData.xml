@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-engine-xml>
+    <!-- PimProductType Seed Data -->
+    <PimProductType productTypeId="FINISHED_GOOD" description="Finished Good"/>
+    <PimProductType productTypeId="RAW_MATERIAL" description="Raw Material"/>
+    <PimProductType productTypeId="SERVICE" description="Service"/>
+    <PimProductType productTypeId="GOOD" description="Good"/>
+    <PimProductType productTypeId="CONFIGURABLE_GOOD" description="Configurable Good"/>
+    <PimProductType productTypeId="DIGITAL_GOOD" description="Digital Good"/>
+    <PimProductType productTypeId="VIRTUAL_PRODUCT" description="Virtual Product"/>
+    <PimProductType productTypeId="VARIANT_PRODUCT" description="Variant Product"/>
+    <PimProductType productTypeId="MARKETING_PACKAGE" description="Marketing Package"/>
+
+    <!-- PimProductContentType Seed Data -->
+    <PimProductContentType productContentTypeId="IMAGE" description="Product Image"/>
+    <PimProductContentType productContentTypeId="DESCRIPTION" description="Product Description"/>
+
+    <!-- PimProductPriceType Seed Data -->
+    <PimProductPriceType productPriceTypeId="LIST_PRICE" description="List Price"/>
+    <PimProductPriceType productPriceTypeId="PROMOTIONAL_PRICE" description="Promotional Price"/>
+
+    <!-- PimProductDimensionType Seed Data -->
+    <PimProductDimensionType dimensionTypeId="WEIGHT" description="Weight"/>
+
+    <!-- PimProductAssocType Seed Data -->
+    <PimProductAssocType productAssocTypeId="VARIANT" description="Variant"/>
+    <PimProductAssocType productAssocTypeId="COMPONENT" description="Component"/>
+
+    <!-- PimProductFeatureType Seed Data -->
+    <PimProductFeatureType productFeatureTypeId="MEMORY" description="Memory size"/>
+    <PimProductFeatureType productFeatureTypeId="COLOR" description="Color"/>
+    <PimProductFeatureType productFeatureTypeId="SIZE" description="Size"/>
+
+    <!-- PimProductCategoryType Seed Data -->
+    <PimProductCategoryType productCategoryTypeId="CATALOG_CATEGORY" description="Catalog Category"/>
+    <PimProductCategoryType productCategoryTypeId="SEARCH_CATEGORY" description="Search Category"/>
+    <PimProductCategoryType productCategoryTypeId="TAX_CATEGORY" description="Tax Category"/>
+
+    <!-- PimFacilityType Seed Data -->
+    <PimFacilityType facilityTypeId="WAREHOUSE" description="Warehouse"/>
+    <PimFacilityType facilityTypeId="STORE" description="Store"/>
+
+    <!-- PimFacilityGroupType Seed Data -->
+    <PimFacilityGroupType facilityGroupTypeId="FULFILLMENT" description="Fulfillment Group"/>
+</entity-engine-xml>

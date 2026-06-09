@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://ofbiz.apache.org/dtds/services.xsd">
+    <description>Product Information Manager Services</description>
+    <vendor>HotWax</vendor>
+    <version>1.0</version>
+
+    <!-- ========================================================= -->
+    <!-- PimProduct Services                                       -->
+    <!-- ========================================================= -->
+    <service name="createPimProduct" default-entity-name="PimProduct" engine="entity-auto" invoke="create" auth="true">
+        <description>Create a new PimProduct</description>
+        <auto-attributes mode="IN" include="pk" optional="false"/>
+        <auto-attributes mode="IN" include="nonpk" optional="true"/>
+    </service>
+
+    <service name="updatePimProduct" default-entity-name="PimProduct" engine="entity-auto" invoke="update" auth="true">
+        <description>Update an existing PimProduct</description>
+        <auto-attributes mode="IN" include="pk" optional="false"/>
+        <auto-attributes mode="IN" include="nonpk" optional="true"/>
+    </service>
+
+    <!-- ========================================================= -->
+    <!-- PimProductContent Services                                -->
+    <!-- ========================================================= -->
+    <service name="createPimProductContent" default-entity-name="PimProductContent" engine="entity-auto" invoke="create" auth="true">
+        <description>Create a new PimProductContent</description>
+        <auto-attributes mode="OUT" include="pk" optional="true"/>
+        <auto-attributes mode="IN" include="nonpk" optional="true"/>
+    </service>
+
+    <!-- ========================================================= -->
+    <!-- PimProductPrice Services                                  -->
+    <!-- ========================================================= -->
+    <service name="createPimProductPrice" default-entity-name="PimProductPrice" engine="entity-auto" invoke="create" auth="true">
+        <description>Create a new PimProductPrice</description>
+        <auto-attributes mode="OUT" include="pk" optional="true"/>
+        <auto-attributes mode="IN" include="nonpk" optional="true"/>
+    </service>
+
+    <!-- ========================================================= -->
+    <!-- PimProductDimension Services                              -->
+    <!-- ========================================================= -->
+    <service name="createPimProductDimension" default-entity-name="PimProductDimension" engine="entity-auto" invoke="create" auth="true">
+        <description>Create a new PimProductDimension</description>
+        <auto-attributes mode="IN" include="pk" optional="false"/>
+        <auto-attributes mode="IN" include="nonpk" optional="true"/>
+    </service>
+
+    <!-- ========================================================= -->
+    <!-- PimProductAssoc Services                                  -->
+    <!-- ========================================================= -->
+    <service name="createPimProductAssoc" default-entity-name="PimProductAssoc" engine="entity-auto" invoke="create" auth="true">
+        <description>Create a new PimProductAssoc</description>
+        <auto-attributes mode="IN" include="pk" optional="false"/>
+        <auto-attributes mode="IN" include="nonpk" optional="true"/>
+    </service>
+
+    <!-- ========================================================= -->
+    <!-- PimProductCategory Services                               -->
+    <!-- ========================================================= -->
+    <service name="createPimProductCategory" default-entity-name="PimProductCategory" engine="entity-auto" invoke="create" auth="true">
+        <description>Create a new PimProductCategory</description>
+        <auto-attributes mode="IN" include="pk" optional="false"/>
+        <auto-attributes mode="IN" include="nonpk" optional="true"/>
+    </service>
+
+    <service name="updatePimProductCategory" default-entity-name="PimProductCategory" engine="entity-auto" invoke="update" auth="true">
+        <description>Update an existing PimProductCategory</description>
+        <auto-attributes mode="IN" include="pk" optional="false"/>
+        <auto-attributes mode="IN" include="nonpk" optional="true"/>
+    </service>
+
+    <service name="createPimProductCategoryMember" default-entity-name="PimProductCategoryMember" engine="entity-auto" invoke="create" auth="true">
+        <description>Create a new PimProductCategoryMember</description>
+        <auto-attributes mode="IN" include="pk" optional="false"/>
+        <auto-attributes mode="IN" include="nonpk" optional="true"/>
+    </service>
+
+    <service name="expirePimProductCategoryMember" default-entity-name="PimProductCategoryMember" engine="groovy"
+             location="component://productinformationmgr/script/ProductServices.groovy" invoke="expireProductCategoryMember" auth="true">
+        <description>Expire a PimProductCategoryMember</description>
+        <auto-attributes mode="IN" include="pk" optional="false"/>
+    </service>
+
+    <!-- ========================================================= -->
+    <!-- PimProductFeature Services                                -->
+    <!-- ========================================================= -->
+    <service name="createPimProductFeature" default-entity-name="PimProductFeature" engine="entity-auto" invoke="create" auth="true">
+        <description>Create a new PimProductFeature</description>
+        <auto-attributes mode="IN" include="pk" optional="false"/>
+        <auto-attributes mode="IN" include="nonpk" optional="true"/>
+    </service>
+
+    <service name="createPimProductFeatureAppl" default-entity-name="PimProductFeatureAppl" engine="entity-auto" invoke="create" auth="true">
+        <description>Create a new PimProductFeatureAppl</description>
+        <auto-attributes mode="IN" include="pk" optional="false"/>
+        <auto-attributes mode="IN" include="nonpk" optional="true"/>
+    </service>
+
+    <service name="expirePimProductFeatureAppl" default-entity-name="PimProductFeatureAppl" engine="groovy"
+             location="component://productinformationmgr/script/ProductServices.groovy" invoke="expireProductFeatureAppl" auth="true">
+        <description>Expire a PimProductFeatureAppl</description>
+        <auto-attributes mode="IN" include="pk" optional="false"/>
+    </service>
+
+    <!-- ========================================================= -->
+    <!-- PimFacility Services                                      -->
+    <!-- ========================================================= -->
+    <service name="createPimFacility" default-entity-name="PimFacility" engine="entity-auto" invoke="create" auth="true">
+        <description>Create a new PimFacility</description>
+        <auto-attributes mode="IN" include="pk" optional="false"/>
+        <auto-attributes mode="IN" include="nonpk" optional="true"/>
+    </service>
+
+    <service name="updatePimFacility" default-entity-name="PimFacility" engine="entity-auto" invoke="update" auth="true">
+        <description>Update an existing PimFacility</description>
+        <auto-attributes mode="IN" include="pk" optional="false"/>
+        <auto-attributes mode="IN" include="nonpk" optional="true"/>
+    </service>
+
+    <service name="createPimFacilityLocation" default-entity-name="PimFacilityLocation" engine="entity-auto" invoke="create" auth="true">
+        <description>Create a new PimFacilityLocation</description>
+        <auto-attributes mode="IN" include="pk" optional="false"/>
+        <auto-attributes mode="IN" include="nonpk" optional="true"/>
+    </service>
+
+    <service name="createPimProductFacility" default-entity-name="PimProductFacility" engine="entity-auto" invoke="create" auth="true">
+        <description>Create a new PimProductFacility</description>
+        <auto-attributes mode="IN" include="pk" optional="false"/>
+    </service>
+
+    <service name="createPimProductFacilityLocation" default-entity-name="PimProductFacilityLocation" engine="entity-auto" invoke="create" auth="true">
+        <description>Create a new PimProductFacilityLocation</description>
+        <auto-attributes mode="IN" include="pk" optional="false"/>
+    </service>
+
+    <service name="createPimFacilityParty" default-entity-name="PimFacilityParty" engine="entity-auto" invoke="create" auth="true">
+        <description>Create a new PimFacilityParty</description>
+        <auto-attributes mode="IN" include="pk" optional="false"/>
+    </service>
+
+    <service name="createPimFacilityGroup" default-entity-name="PimFacilityGroup" engine="entity-auto" invoke="create" auth="true">
+        <description>Create a new PimFacilityGroup</description>
+        <auto-attributes mode="IN" include="pk" optional="false"/>
+        <auto-attributes mode="IN" include="nonpk" optional="true"/>
+    </service>
+
+    <service name="createPimFacilityGroupMember" default-entity-name="PimFacilityGroupMember" engine="entity-auto" invoke="create" auth="true">
+        <description>Create a new PimFacilityGroupMember</description>
+        <auto-attributes mode="IN" include="pk" optional="false"/>
+    </service>
+
+    <service name="createPimFacilityContactMech" default-entity-name="PimFacilityContactMech" engine="entity-auto" invoke="create" auth="true">
+        <description>Create a new PimFacilityContactMech</description>
+        <auto-attributes mode="IN" include="pk" optional="false"/>
+        <auto-attributes mode="IN" include="nonpk" optional="true"/>
+    </service>
+
+    <service name="expirePimFacilityContactMech" default-entity-name="PimFacilityContactMech" engine="groovy"
+             location="component://productinformationmgr/script/ProductServices.groovy" invoke="expireFacilityContactMech" auth="true">
+        <description>Expire a PimFacilityContactMech</description>
+        <auto-attributes mode="IN" include="pk" optional="false"/>
+    </service>
+
+</services>
