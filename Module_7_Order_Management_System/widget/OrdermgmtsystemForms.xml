@@ -89,29 +89,29 @@ under the License.
             </entity-condition>
         </actions>
         <field name="customerPartyId" title="Select Customer">
-            <drop-down allow-empty="false">
+            <drop-down allow-empty="true">
                 <entity-options entity-name="RmPerson" key-field-name="partyId" description="${firstName} ${lastName} (${partyId})"/>
             </drop-down>
         </field>
         <field name="productIdList" title="Select Product">
-            <drop-down allow-empty="false">
+            <drop-down allow-empty="true">
                 <entity-options entity-name="PimProduct" key-field-name="productId" description="${productName} (${productId})"/>
             </drop-down>
         </field>
-        <field name="productQuantities" title="Quantity"><text default-value="1"/></field>
+        <field name="productQuantities" title="Quantity"><text/></field>
         <field name="postalContactMechId" title="Shipping Address">
-            <drop-down allow-empty="false">
+            <drop-down allow-empty="true">
                 <entity-options entity-name="RmPostalAddress" key-field-name="contactMechId" description="${toName} - ${address1}, ${city}"/>
             </drop-down>
         </field>
         <field name="paymentMethod" title="Payment Method">
-            <drop-down>
+            <drop-down allow-empty="true">
                 <option key="Miscellaneous" description="Miscellaneous"/>
                 <option key="Credit Card" description="Credit Card"/>
                 <option key="COD" description="COD"/>
             </drop-down>
         </field>
-        <field name="paymentAmount" title="Payment Amount ($)"><text default-value="0.00"/></field>
+        <field name="paymentAmount" title="Payment Amount ($)"><text/></field>
         <field name="submitButton" title="Create Order" widget-style="smallSubmit"><submit button-type="button"/></field>
     </form>
 

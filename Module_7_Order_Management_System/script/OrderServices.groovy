@@ -138,6 +138,7 @@ def createOrder() {
     Timestamp now = new Timestamp(System.currentTimeMillis())
 
     BigDecimal subTotal = BigDecimal.ZERO
+    List itemsToCreate = []
 
     // Create Order Items and compute subtotal
     for (int i = 0; i < productIdList.size(); i++) {
@@ -163,7 +164,7 @@ def createOrder() {
 
         subTotal = subTotal.add(unitPrice.multiply(quantity))
 
-        // Create Item
+        // Create Item Value (persist later)
         GenericValue item = delegator.makeValue("OmsOrderItem")
         item.orderId = orderId
         item.orderPartSeqId = "00001"
@@ -174,7 +175,7 @@ def createOrder() {
         item.itemStatus = "ORDER_CREATED"
         item.externalId = orderId + "-" + (i + 1)
         item.returnsEligibility = "ELIGIBLE"
-        item.create()
+        itemsToCreate.add(item)
     }
 
     BigDecimal taxRate = new BigDecimal("0.05") // 5% tax
@@ -208,6 +209,11 @@ def createOrder() {
     part.partTotal = total
     part.shipmentMethodEnumId = "GROUND"
     part.create()
+
+    // Persist Order Items now that OmsOrderPart exists
+    for (GenericValue item : itemsToCreate) {
+        item.create()
+    }
 
     // Create Order Contact Mech
     GenericValue orderMech = delegator.makeValue("OmsOrderContactMech")
