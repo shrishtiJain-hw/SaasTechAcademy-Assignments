@@ -65,17 +65,23 @@ def findOrder() {
 
     EntityCondition mainCond = conditions ? EntityCondition.makeCondition(conditions, EntityOperator.AND) : null
 
-    long count = EntityQuery.use(delegator).from("FindOrderView").where(mainCond).queryCount()
+    def countQuery = EntityQuery.use(delegator).from("FindOrderView")
+    if (mainCond) {
+        countQuery = countQuery.where(mainCond)
+    }
+    long count = countQuery.queryCount()
 
     int startRow = viewIndex * viewSize + 1
-    List orderList = EntityQuery.use(delegator)
+    def listQuery = EntityQuery.use(delegator)
         .from("FindOrderView")
-        .where(mainCond)
         .orderBy("-orderDate")
-        .cursorScrollSensitive(true)
-        .maxRows(viewSize)
-        .firstRow(startRow)
-        .queryList()
+        .cursorScrollSensitive()
+    if (mainCond) {
+        listQuery = listQuery.where(mainCond)
+    }
+    def iterator = listQuery.queryIterator()
+    List orderList = iterator.getPartialList(startRow, viewSize)
+    iterator.close()
 
     Map result = success()
     result.orderList = orderList
@@ -90,14 +96,29 @@ def findOrder() {
  */
 def createOrder() {
     String customerPartyId = context.customerPartyId
-    List productIdList = context.productIdList
-    List productQuantities = context.productQuantities
+    def rawProductIdList = context.productIdList
+    def rawProductQuantities = context.productQuantities
+
+    List productIdList = []
+    if (rawProductIdList instanceof List) {
+        productIdList = rawProductIdList
+    } else if (rawProductIdList instanceof String) {
+        productIdList = [rawProductIdList]
+    }
+
+    List productQuantities = []
+    if (rawProductQuantities instanceof List) {
+        productQuantities = rawProductQuantities
+    } else if (rawProductQuantities instanceof String || rawProductQuantities instanceof Number) {
+        productQuantities = [rawProductQuantities]
+    }
+
     String postalContactMechId = context.postalContactMechId
     String paymentMethod = context.paymentMethod
     BigDecimal paymentAmount = context.paymentAmount
     String orderSource = context.orderSource ?: "WEB"
 
-    if (!productIdList || !productQuantities || productIdList.size() != productQuantities.size()) {
+    if (productIdList.isEmpty() || productQuantities.isEmpty() || productIdList.size() != productQuantities.size()) {
         return error("Product items and quantities are mismatched or missing.")
     }
 

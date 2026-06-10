@@ -21,5 +21,193 @@ under the License.
 <forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns="http://ofbiz.apache.org/Widget-Form" xsi:schemaLocation="http://ofbiz.apache.org/Widget-Form http://ofbiz.apache.org/dtds/widget-form.xsd">
 
+    <!-- Search Orders Form -->
+    <form name="FindOrders" type="single" target="findOrder" default-map-name="parameters"
+        header-row-style="header-row" default-table-style="basic-table">
+        <field name="orderId" title="Order ID"><text/></field>
+        <field name="customerName" title="Customer Name"><text/></field>
+        <field name="fromDate" title="From Date (YYYY-MM-DD)"><text/></field>
+        <field name="thruDate" title="To Date (YYYY-MM-DD)"><text/></field>
+        <field name="statusId" title="Order Status">
+            <drop-down allow-empty="true">
+                <option key="ORDER_CREATED" description="Created"/>
+                <option key="ORDER_APPROVED" description="Approved"/>
+                <option key="PARTIALLY_FULFILLED" description="Partially Fulfilled"/>
+                <option key="ORDER_COMPLETED" description="Completed"/>
+                <option key="ORDER_CANCELLED" description="Cancelled"/>
+            </drop-down>
+        </field>
+        <field name="paymentStatus" title="Payment Status">
+            <drop-down allow-empty="true">
+                <option key="PAY_APPROVED" description="Approved"/>
+                <option key="PAY_AUTHORIZED" description="Authorized"/>
+                <option key="PAY_DECLINED" description="Declined"/>
+            </drop-down>
+        </field>
+        <field name="submitButton" title="Search Orders" widget-style="smallSubmit"><submit button-type="button"/></field>
+    </form>
+
+    <!-- List Orders Form -->
+    <form name="ListOrders" type="list" list-name="orderList" paginate-target="findOrder"
+        odd-row-style="alternate-row" header-row-style="header-row-2" default-table-style="basic-table hover-bar">
+        <row-actions>
+            <set field="customerName" value="${customerFirstName} ${customerLastName}"/>
+            <set field="shippingAddress" value="${groovy: shippingAddress1 ? (shippingAddress1 + ', ' + shippingCity + ' (' + shippingPostalCode + ')') : 'No Address'}"/>
+            <set field="totalAmount" value="${partTotal!=null ? partTotal : orderSubTotal}"/>
+        </row-actions>
+        <field name="orderId" title="Order ID" widget-style="buttontext">
+            <hyperlink description="${orderId}" target="findOrderShipGroups">
+                <parameter param-name="orderId"/>
+            </hyperlink>
+        </field>
+        <field name="customerName" title="Customer"><display/></field>
+        <field name="orderDate" title="Order Date"><display/></field>
+        <field name="statusId" title="Status"><display/></field>
+        <field name="totalAmount" title="Total Amount"><display type="currency" currency="USD"/></field>
+        <field name="paymentStatus" title="Payment Status"><display/></field>
+        <field name="shippingAddress" title="Shipping Address"><display/></field>
+        <field name="manageGroups" title="Actions" widget-style="buttontext">
+            <hyperlink description="Ship Groups" target="findOrderShipGroups">
+                <parameter param-name="orderId"/>
+            </hyperlink>
+        </field>
+    </form>
+
+    <!-- Create Sales Order Form -->
+    <form name="CreateOrder" type="single" target="createOrder"
+        header-row-style="header-row" default-table-style="basic-table">
+        <actions>
+            <entity-condition entity-name="RmPerson">
+                <order-by field-name="firstName"/>
+            </entity-condition>
+            <entity-condition entity-name="PimProduct">
+                <entity-constraint name="productId" operator="not-equals" value="SALES_TAX"/>
+                <order-by field-name="productName"/>
+            </entity-condition>
+            <entity-condition entity-name="RmPostalAddress">
+                <order-by field-name="toName"/>
+            </entity-condition>
+        </actions>
+        <field name="customerPartyId" title="Select Customer">
+            <drop-down allow-empty="false">
+                <entity-options entity-name="RmPerson" key-field-name="partyId" description="${firstName} ${lastName} (${partyId})"/>
+            </drop-down>
+        </field>
+        <field name="productIdList" title="Select Product">
+            <drop-down allow-empty="false">
+                <entity-options entity-name="PimProduct" key-field-name="productId" description="${productName} (${productId})"/>
+            </drop-down>
+        </field>
+        <field name="productQuantities" title="Quantity"><text default-value="1"/></field>
+        <field name="postalContactMechId" title="Shipping Address">
+            <drop-down allow-empty="false">
+                <entity-options entity-name="RmPostalAddress" key-field-name="contactMechId" description="${toName} - ${address1}, ${city}"/>
+            </drop-down>
+        </field>
+        <field name="paymentMethod" title="Payment Method">
+            <drop-down>
+                <option key="Miscellaneous" description="Miscellaneous"/>
+                <option key="Credit Card" description="Credit Card"/>
+                <option key="COD" description="COD"/>
+            </drop-down>
+        </field>
+        <field name="paymentAmount" title="Payment Amount ($)"><text default-value="0.00"/></field>
+        <field name="submitButton" title="Create Order" widget-style="smallSubmit"><submit button-type="button"/></field>
+    </form>
+
+    <!-- Edit Order Shipping Address Form -->
+    <form name="EditOrderShippingAddress" type="single" target="updateOrderShippingAddress"
+        header-row-style="header-row" default-table-style="basic-table">
+        <actions>
+            <entity-condition entity-name="RmPostalAddress">
+                <order-by field-name="toName"/>
+            </entity-condition>
+        </actions>
+        <field name="orderId"><hidden/></field>
+        <field name="postalContactMechId" title="Select New Address">
+            <drop-down allow-empty="false">
+                <entity-options entity-name="RmPostalAddress" key-field-name="contactMechId" description="${toName} - ${address1}, ${city}"/>
+            </drop-down>
+        </field>
+        <field name="submitButton" title="Update Address" widget-style="smallSubmit"><submit button-type="button"/></field>
+    </form>
+
+    <!-- Create / Configure Ship Group Form -->
+    <form name="CreateOrderItemShipGroup" type="single" target="createOrderItemShipGroup"
+        header-row-style="header-row" default-table-style="basic-table">
+        <field name="orderId"><hidden/></field>
+        <field name="shipmentMethodEnumId" title="Shipping Method">
+            <drop-down allow-empty="false">
+                <option key="GROUND" description="UPS Ground"/>
+                <option key="2ND_DAY" description="UPS 2nd Day"/>
+                <option key="FEDEX_GROUND" description="FedEx Ground"/>
+                <option key="DHL_EXPRESS" description="DHL Express"/>
+                <option key="COD" description="COD"/>
+            </drop-down>
+        </field>
+        <field name="estimatedDeliveryDate" title="Estimated Delivery Date (YYYY-MM-DD)"><text/></field>
+        <field name="submitButton" title="Configure Ship Group" widget-style="smallSubmit"><submit button-type="button"/></field>
+    </form>
+
+    <!-- Associated Ship Groups (Order Parts) List -->
+    <form name="ListOrderParts" type="list" list-name="orderParts"
+        odd-row-style="alternate-row" header-row-style="header-row-2" default-table-style="basic-table hover-bar">
+        <field name="orderPartSeqId" title="Part Seq ID"><display/></field>
+        <field name="customerPartyId" title="Customer ID"><display/></field>
+        <field name="vendorPartyId" title="Vendor ID" use-when="vendorPartyId!=null"><display/></field>
+        <field name="shipmentMethodEnumId" title="Shipping Method"><display/></field>
+        <field name="estimatedDeliveryDate" title="Estimated Delivery"><display/></field>
+        <field name="partTotal" title="Part Total"><display type="currency" currency="USD"/></field>
+        <field name="statusId" title="Status"><display/></field>
+    </form>
+
+    <!-- Ordered Items List -->
+    <form name="ListOrderItems" type="list" list-name="orderItems"
+        odd-row-style="alternate-row" header-row-style="header-row-2" default-table-style="basic-table hover-bar">
+        <row-actions>
+            <set field="itemTotal" value="${groovy: quantity * unitPrice}"/>
+        </row-actions>
+        <field name="orderItemSeqId" title="Item Seq"><display/></field>
+        <field name="orderPartSeqId" title="Part Seq"><display/></field>
+        <field name="productId" title="Product ID"><display/></field>
+        <field name="quantity" title="Quantity"><display/></field>
+        <field name="unitPrice" title="Unit Price"><display type="currency" currency="USD"/></field>
+        <field name="itemTotal" title="Total"><display type="currency" currency="USD"/></field>
+        <field name="fulfillmentType" title="Fulfillment Type"><display/></field>
+        <field name="itemStatus" title="Status"><display/></field>
+    </form>
+
+    <!-- Linked Shipments List -->
+    <form name="ListOrderShipments" type="list" list-name="shipments"
+        odd-row-style="alternate-row" header-row-style="header-row-2" default-table-style="basic-table hover-bar">
+        <field name="shipmentId" title="Shipment ID"><display/></field>
+        <field name="statusId" title="Status"><display/></field>
+        <field name="estimatedShipDate" title="Est Ship Date"><display/></field>
+        <field name="estimatedShipCost" title="Est Cost"><display type="currency" currency="USD"/></field>
+        <field name="binLocationNumber" title="Bin Location"><display/></field>
+        <field name="shipmentTypeEnumId" title="Type"><display/></field>
+    </form>
+
+    <!-- Search Ship Groups by Order ID Form -->
+    <form name="SearchShipGroupsByOrder" type="single" target="findOrderShipGroups" default-map-name="parameters"
+        header-row-style="header-row" default-table-style="basic-table">
+        <field name="orderId" title="Enter Order ID"><text/></field>
+        <field name="submitButton" title="Search Ship Groups" widget-style="smallSubmit"><submit button-type="button"/></field>
+    </form>
+
+    <!-- View Order Details Form -->
+    <form name="ViewOrderDetails" type="single" default-map-name="orderHeader"
+        header-row-style="header-row" default-table-style="basic-table">
+        <row-actions>
+            <set field="shippingAddressStr" value="${groovy: context.shippingAddress ? (context.shippingAddress.address1 + ', ' + context.shippingAddress.city + ' (' + context.shippingAddress.postalCode + ')') : 'None'}"/>
+        </row-actions>
+        <field name="orderId" title="Order ID"><display/></field>
+        <field name="orderDate" title="Order Date"><display/></field>
+        <field name="orderType" title="Order Type"><display/></field>
+        <field name="orderSubTotal" title="Order Subtotal"><display type="currency" currency="USD"/></field>
+        <field name="taxSubTotal" title="Tax Amount"><display type="currency" currency="USD"/></field>
+        <field name="shippingAddressStr" title="Shipping Address"><display/></field>
+        <field name="statusId" title="Status"><display/></field>
+    </form>
 
 </forms>

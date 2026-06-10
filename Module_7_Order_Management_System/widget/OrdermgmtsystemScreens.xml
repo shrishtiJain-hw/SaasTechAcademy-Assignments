@@ -28,23 +28,8 @@ under the License.
                 <set field="titleProperty" value="PageTitleFindOrder"/>
                 <set field="headerItem" value="findOrder"/>
                 
-                <!-- Run findOrder service -->
-                <service-call service-name="findOrder" result-map="result">
-                    <field-map field-name="orderId" from-field="parameters.orderId"/>
-                    <field-map field-name="customerName" from-field="parameters.customerName"/>
-                    <field-map field-name="fromDate" from-field="parameters.fromDate"/>
-                    <field-map field-name="thruDate" from-field="parameters.thruDate"/>
-                    <field-map field-name="statusId" from-field="parameters.statusId"/>
-                    <field-map field-name="paymentStatus" from-field="parameters.paymentStatus"/>
-                    <field-map field-name="shippingAddress" from-field="parameters.shippingAddress"/>
-                    <field-map field-name="viewIndex" from-field="parameters.viewIndex" type="Integer"/>
-                    <field-map field-name="viewSize" from-field="parameters.viewSize" type="Integer"/>
-                </service-call>
-                
-                <set field="orderList" from-field="result.orderList"/>
-                <set field="orderListSize" from-field="result.orderListSize"/>
-                <set field="viewIndex" from-field="result.viewIndex"/>
-                <set field="viewSize" from-field="result.viewSize"/>
+                <!-- Run search service using helper script to avoid XML schema version limitations -->
+                <script location="component://ordermgmtsystem/script/FindOrdersHelper.groovy"/>
                 
                 <!-- Fetch reference data for the Order Creation overlay form -->
                 <entity-condition entity-name="RmPerson" list="customerList">
@@ -58,9 +43,15 @@ under the License.
             <widgets>
                 <decorator-screen name="OrdermgmtsystemCommonDecorator" location="component://ordermgmtsystem/widget/CommonScreens.xml">
                     <decorator-section name="body">
-                        <platform-specific>
-                            <html><html-template location="component://ordermgmtsystem/webapp/ordermgmtsystem/order/findOrder.ftl"/></html>
-                        </platform-specific>
+                        <screenlet title="Create New Sales Order">
+                            <include-form name="CreateOrder" location="component://ordermgmtsystem/widget/OrdermgmtsystemForms.xml"/>
+                        </screenlet>
+                        <screenlet title="Search Orders">
+                            <include-form name="FindOrders" location="component://ordermgmtsystem/widget/OrdermgmtsystemForms.xml"/>
+                        </screenlet>
+                        <screenlet title="Orders List">
+                            <include-form name="ListOrders" location="component://ordermgmtsystem/widget/OrdermgmtsystemForms.xml"/>
+                        </screenlet>
                     </decorator-section>
                 </decorator-screen>
             </widgets>
@@ -80,12 +71,62 @@ under the License.
             <widgets>
                 <decorator-screen name="OrdermgmtsystemCommonDecorator" location="component://ordermgmtsystem/widget/CommonScreens.xml">
                     <decorator-section name="body">
-                        <platform-specific>
-                            <html>
-                                <html-template location="component://ordermgmtsystem/webapp/ordermgmtsystem/order/createOrderShipGroup.ftl"/>
-                                <html-template location="component://ordermgmtsystem/webapp/ordermgmtsystem/order/findOrderShipGroups.ftl"/>
-                            </html>
-                        </platform-specific>
+                        <screenlet title="Search Ship Groups by Order">
+                            <include-form name="SearchShipGroupsByOrder" location="component://ordermgmtsystem/widget/OrdermgmtsystemForms.xml"/>
+                        </screenlet>
+                        <section>
+                            <condition>
+                                <not><if-empty field="orderHeader"/></not>
+                            </condition>
+                            <widgets>
+                                <screenlet title="Order Details">
+                                    <include-form name="ViewOrderDetails" location="component://ordermgmtsystem/widget/OrdermgmtsystemForms.xml"/>
+                                </screenlet>
+                                <section>
+                                    <condition>
+                                        <and>
+                                            <not><if-compare field="orderHeader.statusId" operator="equals" value="ORDER_COMPLETED"/></not>
+                                            <not><if-compare field="orderHeader.statusId" operator="equals" value="ORDER_CANCELLED"/></not>
+                                            <not><if-compare field="orderHeader.statusId" operator="equals" value="PARTIALLY_FULFILLED"/></not>
+                                        </and>
+                                    </condition>
+                                    <widgets>
+                                        <screenlet title="Edit Shipping Address">
+                                            <include-form name="EditOrderShippingAddress" location="component://ordermgmtsystem/widget/OrdermgmtsystemForms.xml"/>
+                                        </screenlet>
+                                    </widgets>
+                                </section>
+                                <screenlet title="Configure Ship Group">
+                                    <include-form name="CreateOrderItemShipGroup" location="component://ordermgmtsystem/widget/OrdermgmtsystemForms.xml"/>
+                                </screenlet>
+                                <screenlet title="Associated Ship Groups (Order Parts)">
+                                    <include-form name="ListOrderParts" location="component://ordermgmtsystem/widget/OrdermgmtsystemForms.xml"/>
+                                </screenlet>
+                                <screenlet title="Ordered Items">
+                                    <include-form name="ListOrderItems" location="component://ordermgmtsystem/widget/OrdermgmtsystemForms.xml"/>
+                                </screenlet>
+                                <section>
+                                    <condition>
+                                        <not><if-empty field="shipments"/></not>
+                                    </condition>
+                                    <widgets>
+                                        <screenlet title="Fulfillment Shipments">
+                                            <include-form name="ListOrderShipments" location="component://ordermgmtsystem/widget/OrdermgmtsystemForms.xml"/>
+                                        </screenlet>
+                                    </widgets>
+                                </section>
+                            </widgets>
+                            <fail-widgets>
+                                <section>
+                                    <condition>
+                                        <not><if-empty field="parameters.orderId"/></not>
+                                    </condition>
+                                    <widgets>
+                                        <label style="h3" text="Order ID '${parameters.orderId}' was not found. Please verify the ID and try again."/>
+                                    </widgets>
+                                </section>
+                            </fail-widgets>
+                        </section>
                     </decorator-section>
                 </decorator-screen>
             </widgets>
