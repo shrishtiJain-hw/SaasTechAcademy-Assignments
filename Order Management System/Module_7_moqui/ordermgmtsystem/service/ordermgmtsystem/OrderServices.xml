@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/service-definition-3.xsd">
+
+    <!-- findOrder -->
+    <service verb="find" noun="Order">
+        <in-parameters>
+            <parameter name="orderId"/>
+            <parameter name="customerName"/>
+            <parameter name="fromDate"/>
+            <parameter name="thruDate"/>
+            <parameter name="statusId"/>
+            <parameter name="paymentStatus"/>
+            <parameter name="shippingAddress"/>
+        </in-parameters>
+        <out-parameters>
+            <parameter name="orderList" type="List" required="true"/>
+        </out-parameters>
+        <actions>
+            <script>
+                import org.moqui.entity.EntityCondition
+                def findQuery = ec.entity.find("ordermgmtsystem.FindOrderView")
+                
+                if (orderId) {
+                    findQuery.condition("orderId", EntityCondition.LIKE, "%" + orderId + "%")
+                }
+                if (customerName) {
+                    findQuery.condition(ec.entity.conditionBuilder()
+                        .condition("customerFirstName", EntityCondition.LIKE, "%" + customerName + "%")
+                        .or()
+                        .condition("customerLastName", EntityCondition.LIKE, "%" + customerName + "%")
+                        .build())
+                }
+                if (fromDate) {
+                    findQuery.condition("orderDate", EntityCondition.GREATER_THAN_EQUAL_TO, ec.l10n.parseTimestamp(fromDate, null))
+                }
+                if (thruDate) {
+                    findQuery.condition("orderDate", EntityCondition.LESS_THAN_EQUAL_TO, ec.l10n.parseTimestamp(thruDate, null))
+                }
+                if (statusId) {
+                    findQuery.condition("statusId", statusId)
+                }
+                if (paymentStatus) {
+                    findQuery.condition("paymentStatus", paymentStatus)
+                }
+                if (shippingAddress) {
+                    findQuery.condition(ec.entity.conditionBuilder()
+                        .condition("shippingAddress1", EntityCondition.LIKE, "%" + shippingAddress + "%")
+                        .or()
+                        .condition("shippingCity", EntityCondition.LIKE, "%" + shippingAddress + "%")
+                        .or()
+                        .condition("shippingPostalCode", EntityCondition.LIKE, "%" + shippingAddress + "%")
+                        .build())
+                }
+                
+                context.orderList = findQuery.orderBy("-orderDate").list()
+            </script>
+        </actions>
+    </service>
+
+    <!-- createOrder -->
+    <service verb="create" noun="Order">
+        <in-parameters>
+            <parameter name="customerPartyId" required="true"/>
+            <parameter name="productIdList" type="List" required="true"/>
+            <parameter name="productQuantities" type="List" required="true"/>
+            <parameter name="postalContactMechId" required="true"/>
+            <parameter name="paymentMethod" required="true"/>
+            <parameter name="paymentAmount" type="BigDecimal" required="true"/>
+            <parameter name="orderSource" default="'WEB'"/>
+        </in-parameters>
+        <out-parameters>
+            <parameter name="orderId" required="true"/>
+        </out-parameters>
+        <actions>
+            <script><![CDATA[
+                // 1. Validate Customer
+                def customer = ec.entity.find("relationshipmgr.RmParty").condition("partyId", customerPartyId).one()
+                if (customer == null) {
+                    ec.message.addError("Customer Party ID: " + customerPartyId + " does not exist.")
+                    return
+                }
+                
+                // 2. Validate Contact Mech Address
+                def contactMech = ec.entity.find("relationshipmgr.RmContactMech").condition("contactMechId", postalContactMechId).one()
+                if (contactMech == null) {
+                    ec.message.addError("Shipping Postal Address Contact Mech ID: " + postalContactMechId + " does not exist.")
+                    return
+                }
+                
+                if (productIdList.size() != productQuantities.size() || productIdList.isEmpty()) {
+                    ec.message.addError("Product items and quantities are mismatched or empty.")
+                    return
+                }
+                
+                // 3. Generate Order ID
+                String newOrderId = ec.entity.sequencedIdPrimary("ordermgmtsystem.OmsOrderHeader", null, null)
+                BigDecimal subTotal = BigDecimal.ZERO
+                def itemsToCreate = []
+                
+                // 4. Validate Products and Prices
+                for (int i = 0; i < productIdList.size(); i++) {
+                    String pId = productIdList[i]
+                    BigDecimal qty = new BigDecimal(productQuantities[i].toString())
+                    
+                    def product = ec.entity.find("productinformationmgr.PimProduct").condition("productId", pId).one()
+                    if (product == null) {
+                        ec.message.addError("Product ID: " + pId + " does not exist.")
+                        return
+                    }
+                    
+                    // Fetch Price
+                    BigDecimal unitPrice = new BigDecimal("100.00") // default fallback
+                    def priceVal = ec.entity.find("productinformationmgr.PimProductPrice")
+                        .condition([productId: pId, productPriceTypeId: "LIST_PRICE"])
+                        .one()
+                    if (priceVal != null && priceVal.price != null) {
+                        unitPrice = priceVal.price
+                    }
+                    
+                    subTotal = subTotal.add(unitPrice.multiply(qty))
+                    
+                    def itemMap = [
+                        orderId: newOrderId,
+                        orderPartSeqId: "00001",
+                        orderItemSeqId: String.format("%05d", i + 1),
+                        productId: pId,
+                        quantity: qty,
+                        unitPrice: unitPrice,
+                        itemStatus: "ORDER_CREATED",
+                        externalId: newOrderId + "-" + (i + 1),
+                        returnsEligibility: "ELIGIBLE"
+                    ]
+                    itemsToCreate.add(itemMap)
+                }
+                
+                BigDecimal taxRate = new BigDecimal("0.05") // 5% tax
+                BigDecimal taxSubTotal = subTotal.multiply(taxRate).setScale(2, BigDecimal.ROUND_HALF_UP)
+                BigDecimal total = subTotal.add(taxSubTotal)
+                
+                // 5. Create Order Header
+                def orderHeader = ec.entity.makeValue("ordermgmtsystem.OmsOrderHeader")
+                orderHeader.setFields([
+                    orderId: newOrderId,
+                    statusId: "ORDER_CREATED",
+                    orderDate: ec.user.nowTimestamp,
+                    orderSource: orderSource,
+                    orderType: "SALES_ORDER",
+                    orderSubTotal: subTotal,
+                    taxSubTotal: taxSubTotal,
+                    discount: BigDecimal.ZERO,
+                    currency: "USD",
+                    canReturn: "TRUE",
+                    displayOrderId: newOrderId,
+                    storeId: "STORE_001",
+                    email: "customer@example.com"
+                ], true, null, null)
+                orderHeader.create()
+                
+                // 6. Create Order Part
+                def orderPart = ec.entity.makeValue("ordermgmtsystem.OmsOrderPart")
+                orderPart.setFields([
+                    orderId: newOrderId,
+                    orderPartSeqId: "00001",
+                    customerPartyId: customerPartyId,
+                    postalContactMechId: postalContactMechId,
+                    statusId: "PART_CREATED",
+                    partTotal: total,
+                    shipmentMethodEnumId: "GROUND"
+                ], true, null, null)
+                orderPart.create()
+                
+                // 7. Create Order Items
+                for (itemMap in itemsToCreate) {
+                    def orderItem = ec.entity.makeValue("ordermgmtsystem.OmsOrderItem")
+                    orderItem.setFields(itemMap, true, null, null)
+                    orderItem.create()
+                }
+                
+                // 8. Create Order Contact Mech
+                def orderContactMech = ec.entity.makeValue("ordermgmtsystem.OmsOrderContactMech")
+                orderContactMech.setFields([
+                    orderId: newOrderId,
+                    contactMechPurposeTypeId: "SHIPPING_LOCATION",
+                    contactMechId: postalContactMechId
+                ], true, null, null)
+                orderContactMech.create()
+                
+                // 9. Create Payment Preference
+                String payPrefId = ec.entity.sequencedIdPrimary("ordermgmtsystem.OmsOrderPaymentPreference", null, null)
+                def paymentPreference = ec.entity.makeValue("ordermgmtsystem.OmsOrderPaymentPreference")
+                paymentPreference.setFields([
+                    orderPaymentPreferenceId: payPrefId,
+                    orderId: newOrderId,
+                    orderPartSeqId: "00001",
+                    paymentMethod: paymentMethod,
+                    amountAuthorized: total,
+                    transactionId: "TX-" + System.currentTimeMillis(),
+                    paymentStatus: "PAY_AUTHORIZED",
+                    paymentDevice: "NoReader",
+                    paymentSequenceNumber: "1"
+                ], true, null, null)
+                paymentPreference.create()
+                
+                context.orderId = newOrderId
+            ]]></script>
+        </actions>
+    </service>
+
+    <!-- updateOrderShippingAddress -->
+    <service verb="update" noun="OrderShippingAddress">
+        <in-parameters>
+            <parameter name="orderId" required="true"/>
+            <parameter name="postalContactMechId" required="true"/>
+        </in-parameters>
+        <actions>
+            <script>
+                def header = ec.entity.find("ordermgmtsystem.OmsOrderHeader").condition("orderId", orderId).one()
+                if (header == null) {
+                    ec.message.addError("Order ID: " + orderId + " does not exist.")
+                    return
+                }
+                
+                if (header.statusId == "ORDER_COMPLETED" || header.statusId == "ORDER_CANCELLED" || header.statusId == "PARTIALLY_FULFILLED") {
+                    ec.message.addError("Cannot update shipping address: Order is already in status " + header.statusId)
+                    return
+                }
+                
+                def contactMech = ec.entity.find("relationshipmgr.RmContactMech").condition("contactMechId", postalContactMechId).one()
+                if (contactMech == null) {
+                    ec.message.addError("Shipping Address Contact Mech ID: " + postalContactMechId + " does not exist.")
+                    return
+                }
+                
+                // Remove old OmsOrderContactMech for SHIPPING_LOCATION
+                ec.entity.find("ordermgmtsystem.OmsOrderContactMech")
+                    .condition([orderId: orderId, contactMechPurposeTypeId: "SHIPPING_LOCATION"])
+                    .deleteAll()
+                
+                // Create new link
+                ec.entity.makeValue("ordermgmtsystem.OmsOrderContactMech").setFields([
+                    orderId: orderId,
+                    contactMechPurposeTypeId: "SHIPPING_LOCATION",
+                    contactMechId: postalContactMechId
+                ]).create()
+                
+                // Update OmsOrderPart
+                def parts = ec.entity.find("ordermgmtsystem.OmsOrderPart").condition("orderId", orderId).list()
+                for (part in parts) {
+                    part.postalContactMechId = postalContactMechId
+                    part.update()
+                }
+            </script>
+        </actions>
+    </service>
+
+    <!-- createOrderItemShipGroup -->
+    <service verb="create" noun="OrderItemShipGroup">
+        <in-parameters>
+            <parameter name="orderId" required="true"/>
+            <parameter name="shipmentMethodEnumId" required="true"/>
+            <parameter name="estimatedDeliveryDate"/>
+        </in-parameters>
+        <actions>
+            <script>
+                def parts = ec.entity.find("ordermgmtsystem.OmsOrderPart").condition("orderId", orderId).list()
+                if (parts.isEmpty()) {
+                    ec.message.addError("No order parts found for Order ID: " + orderId)
+                    return
+                }
+                
+                def deliveryDate = estimatedDeliveryDate ? ec.l10n.parseTimestamp(estimatedDeliveryDate, null) : null
+                
+                for (part in parts) {
+                    part.shipmentMethodEnumId = shipmentMethodEnumId
+                    if (deliveryDate) {
+                        part.estimatedDeliveryDate = deliveryDate
+                    }
+                    part.update()
+                }
+            </script>
+        </actions>
+    </service>
+
+</services>

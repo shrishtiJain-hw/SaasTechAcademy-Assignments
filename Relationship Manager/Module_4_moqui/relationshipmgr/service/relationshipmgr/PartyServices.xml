@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/service-definition-3.xsd">
+
+    <!-- createRmPerson -->
+    <service verb="create" noun="RmPerson">
+        <in-parameters>
+            <parameter name="partyId"/>
+            <parameter name="firstName" required="true"/>
+            <parameter name="lastName" required="true"/>
+            <parameter name="birthDate" type="Date"/>
+        </in-parameters>
+        <out-parameters>
+            <parameter name="partyId" required="true"/>
+        </out-parameters>
+        <actions>
+            <if condition="!partyId">
+                <set field="partyId" from="ec.entity.sequencedIdPrimary('relationshipmgr.RmParty', null, null)"/>
+            </if>
+            <entity-make-value entity-name="relationshipmgr.RmParty" value-field="newParty" map="[partyId: partyId, partyTypeId: 'PERSON']"/>
+            <entity-create value-field="newParty"/>
+            <entity-make-value entity-name="relationshipmgr.RmPerson" value-field="newPerson" map="[partyId: partyId, firstName: firstName, lastName: lastName, birthDate: birthDate]"/>
+            <entity-create value-field="newPerson"/>
+        </actions>
+    </service>
+
+    <!-- updateRmPerson -->
+    <service verb="update" noun="RmPerson">
+        <in-parameters>
+            <parameter name="partyId" required="true"/>
+            <parameter name="firstName"/>
+            <parameter name="lastName"/>
+            <parameter name="birthDate" type="Date"/>
+        </in-parameters>
+        <actions>
+            <entity-find-one entity-name="relationshipmgr.RmPerson" value-field="person"/>
+            <if condition="person">
+                <if condition="firstName != null"><set field="person.firstName" from="firstName"/></if>
+                <if condition="lastName != null"><set field="person.lastName" from="lastName"/></if>
+                <if condition="birthDate != null"><set field="person.birthDate" from="birthDate"/></if>
+                <entity-update value-field="person"/>
+            </if>
+        </actions>
+    </service>
+
+    <!-- createRmOrganization -->
+    <service verb="create" noun="RmOrganization">
+        <in-parameters>
+            <parameter name="partyId"/>
+            <parameter name="organizationName" required="true"/>
+        </in-parameters>
+        <out-parameters>
+            <parameter name="partyId" required="true"/>
+        </out-parameters>
+        <actions>
+            <if condition="!partyId">
+                <set field="partyId" from="ec.entity.sequencedIdPrimary('relationshipmgr.RmParty', null, null)"/>
+            </if>
+            <entity-make-value entity-name="relationshipmgr.RmParty" value-field="newParty" map="[partyId: partyId, partyTypeId: 'ORGANIZATION']"/>
+            <entity-create value-field="newParty"/>
+            <entity-make-value entity-name="relationshipmgr.RmOrganization" value-field="newOrg" map="[partyId: partyId, organizationName: organizationName]"/>
+            <entity-create value-field="newOrg"/>
+        </actions>
+    </service>
+
+    <!-- updateRmOrganization -->
+    <service verb="update" noun="RmOrganization">
+        <in-parameters>
+            <parameter name="partyId" required="true"/>
+            <parameter name="organizationName"/>
+        </in-parameters>
+        <actions>
+            <entity-find-one entity-name="relationshipmgr.RmOrganization" value-field="org"/>
+            <if condition="org">
+                <if condition="organizationName != null"><set field="org.organizationName" from="organizationName"/></if>
+                <entity-update value-field="org"/>
+            </if>
+        </actions>
+    </service>
+
+    <!-- createRmContactMech -->
+    <service verb="create" noun="RmContactMech">
+        <in-parameters>
+            <parameter name="partyId" required="true"/>
+            <parameter name="contactMechTypeId" required="true"/>
+            <parameter name="contactMechPurposeId" required="true"/>
+            <parameter name="infoString"/>
+
+            <!-- Telecom fields -->
+            <parameter name="countryCode"/>
+            <parameter name="areaCode"/>
+            <parameter name="contactNumber"/>
+
+            <!-- Postal address fields -->
+            <parameter name="toName"/>
+            <parameter name="attnName"/>
+            <parameter name="address1"/>
+            <parameter name="address2"/>
+            <parameter name="city"/>
+            <parameter name="postalCode"/>
+        </in-parameters>
+        <out-parameters>
+            <parameter name="contactMechId" required="true"/>
+        </out-parameters>
+        <actions>
+            <set field="contactMechId" from="ec.entity.sequencedIdPrimary('relationshipmgr.RmContactMech', null, null)"/>
+            <entity-make-value entity-name="relationshipmgr.RmContactMech" value-field="newContactMech" map="[contactMechId: contactMechId, contactMechTypeId: contactMechTypeId, infoString: infoString]"/>
+            <entity-create value-field="newContactMech"/>
+
+            <if condition="contactMechTypeId == 'TELECOM_NUMBER'">
+                <entity-make-value entity-name="relationshipmgr.RmTelecomNumber" value-field="newTelecomNumber" map="[contactMechId: contactMechId, countryCode: countryCode, areaCode: areaCode, contactNumber: contactNumber]"/>
+                <entity-create value-field="newTelecomNumber"/>
+            </if>
+            <if condition="contactMechTypeId == 'POSTAL_ADDRESS'">
+                <entity-make-value entity-name="relationshipmgr.RmPostalAddress" value-field="newPostalAddress" map="[contactMechId: contactMechId, toName: toName, attnName: attnName, address1: address1, address2: address2, city: city, postalCode: postalCode]"/>
+                <entity-create value-field="newPostalAddress"/>
+            </if>
+
+            <entity-make-value entity-name="relationshipmgr.RmPartyContactMech" value-field="newPartyContactMech" map="[partyId: partyId, contactMechId: contactMechId, contactMechPurposeId: contactMechPurposeId, fromDate: ec.user.nowTimestamp]"/>
+            <entity-create value-field="newPartyContactMech"/>
+        </actions>
+    </service>
+
+    <!-- expireRmPartyContactMech -->
+    <service verb="expire" noun="RmPartyContactMech">
+        <in-parameters>
+            <parameter name="partyId" required="true"/>
+            <parameter name="contactMechId" required="true"/>
+            <parameter name="contactMechPurposeId" required="true"/>
+            <parameter name="fromDate" type="Timestamp" required="true"/>
+        </in-parameters>
+        <actions>
+            <entity-find-one entity-name="relationshipmgr.RmPartyContactMech" value-field="partyContactMech"/>
+            <if condition="partyContactMech">
+                <set field="partyContactMech.thruDate" from="ec.user.nowTimestamp"/>
+                <entity-update value-field="partyContactMech"/>
+            </if>
+        </actions>
+    </service>
+
+</services>

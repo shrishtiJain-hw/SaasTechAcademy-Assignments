@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-3.xsd"
+    default-menu-title="Product Details">
+
+    <parameter name="productId" required="true"/>
+
+    <transition name="updateProduct">
+        <service-call name="productinformationmgr.ProductServices.update#PimProduct"/>
+        <default-response url="."/>
+    </transition>
+
+    <transition name="addPrice">
+        <service-call name="productinformationmgr.ProductServices.create#PimProductPrice"/>
+        <default-response url="."/>
+    </transition>
+
+    <transition name="addDimension">
+        <service-call name="productinformationmgr.ProductServices.create#PimProductDimension"/>
+        <default-response url="."/>
+    </transition>
+
+    <transition name="addCategoryMember">
+        <service-call name="productinformationmgr.ProductServices.create#PimProductCategoryMember"/>
+        <default-response url="."/>
+    </transition>
+
+    <transition name="expireCategoryMember">
+        <service-call name="productinformationmgr.ProductServices.expire#PimProductCategoryMember"/>
+        <default-response url="."/>
+    </transition>
+
+    <actions>
+        <entity-find-one entity-name="productinformationmgr.PimProduct" value-field="product"/>
+        <if condition="product == null">
+            <message error="true">Product not found with ID ${productId}</message>
+        </if>
+
+        <entity-find entity-name="productinformationmgr.PimProductPrice" list="productPrices">
+            <econdition field-name="productId" from="productId"/>
+        </entity-find>
+
+        <entity-find entity-name="productinformationmgr.PimProductDimension" list="productDimensions">
+            <econdition field-name="productId" from="productId"/>
+        </entity-find>
+
+        <entity-find entity-name="productinformationmgr.PimProductCategoryMember" list="productCategories">
+            <econdition field-name="productId" from="productId"/>
+        </entity-find>
+    </actions>
+
+    <widgets>
+        <container style="margin-bottom: 10px;">
+            <link url="../ProductList" text="Back to List" link-type="anchor"/>
+        </container>
+
+        <container-row>
+            <!-- Edit Product Info -->
+            <row-col lg="6" md="6" sm="12">
+                <container-box>
+                    <box-header title="Edit Product Info"/>
+                    <box-body>
+                        <form-single name="EditProductForm" transition="updateProduct" map="product">
+                            <field name="productId"><default-field title="Product ID"><display/></default-field></field>
+                            <field name="productName"><default-field title="Product Name"><text-line size="35"/></default-field></field>
+                            <field name="productTypeId">
+                                <default-field title="Type">
+                                    <drop-down>
+                                        <option key="FINISHED_GOOD" text="Finished Good"/>
+                                        <option key="RAW_MATERIAL" text="Raw Material"/>
+                                        <option key="SERVICE" text="Service"/>
+                                        <option key="MARKETING_PACKAGE" text="Marketing Package"/>
+                                    </drop-down>
+                                </default-field>
+                            </field>
+                            <field name="isVirtual"><default-field title="Is Virtual?"><drop-down><option key="N" text="No"/><option key="Y" text="Yes"/></drop-down></default-field></field>
+                            <field name="isVariant"><default-field title="Is Variant?"><drop-down><option key="N" text="No"/><option key="Y" text="Yes"/></drop-down></default-field></field>
+                            <field name="submitButton"><default-field title="Update"><submit/></default-field></field>
+                        </form-single>
+                    </box-body>
+                </container-box>
+            </row-col>
+
+            <!-- Product Dimensions -->
+            <row-col lg="6" md="6" sm="12">
+                <container-box>
+                    <box-header title="Product Dimensions"/>
+                    <box-body>
+                        <form-list name="ListDimensions" list="productDimensions" skip-form="true">
+                            <field name="dimensionTypeId"><default-field title="Dimension Type"><display/></default-field></field>
+                            <field name="dimensionValue"><default-field title="Value"><display/></default-field></field>
+                            <field name="valueUomId"><default-field title="Unit"><display/></default-field></field>
+                        </form-list>
+
+                        <container style="margin-top: 15px;">
+                            <label text="Add Dimension" style="h5"/>
+                            <form-single name="AddDimensionForm" transition="addDimension">
+                                <field name="productId" from="productId"><default-field><hidden/></default-field></field>
+                                <field name="dimensionTypeId">
+                                    <default-field title="Type">
+                                        <drop-down>
+                                            <option key="WEIGHT" text="Weight"/>
+                                        </drop-down>
+                                    </default-field>
+                                </field>
+                                <field name="dimensionValue"><default-field title="Value"><text-line size="10"/></default-field></field>
+                                <field name="valueUomId">
+                                    <default-field title="Unit">
+                                        <drop-down>
+                                            <option key="OUNCES" text="Ounces"/>
+                                            <option key="LBS" text="Pounds"/>
+                                        </drop-down>
+                                    </default-field>
+                                </field>
+                                <field name="submitButton"><default-field title="Add"><submit/></default-field></field>
+                            </form-single>
+                        </container>
+                    </box-body>
+                </container-box>
+            </row-col>
+        </container-row>
+
+        <container-row>
+            <!-- Product Prices -->
+            <row-col lg="6" md="6" sm="12">
+                <container-box>
+                    <box-header title="Prices"/>
+                    <box-body>
+                        <form-list name="ListPrices" list="productPrices" skip-form="true">
+                            <field name="productPriceTypeId"><default-field title="Price Type"><display/></default-field></field>
+                            <field name="price"><default-field title="Price"><display/></default-field></field>
+                        </form-list>
+
+                        <container style="margin-top: 15px;">
+                            <label text="Add Price" style="h5"/>
+                            <form-single name="AddPriceForm" transition="addPrice">
+                                <field name="productId" from="productId"><default-field><hidden/></default-field></field>
+                                <field name="productPriceTypeId">
+                                    <default-field title="Price Type">
+                                        <drop-down>
+                                            <option key="LIST_PRICE" text="List Price"/>
+                                            <option key="PROMOTIONAL_PRICE" text="Promotional Price"/>
+                                        </drop-down>
+                                    </default-field>
+                                </field>
+                                <field name="price"><default-field title="Price Amount"><text-line size="15"/></default-field></field>
+                                <field name="submitButton"><default-field title="Add Price"><submit/></default-field></field>
+                            </form-single>
+                        </container>
+                    </box-body>
+                </container-box>
+            </row-col>
+
+            <!-- Product Category Memberships -->
+            <row-col lg="6" md="6" sm="12">
+                <container-box>
+                    <box-header title="Category Assignments"/>
+                    <box-body>
+                        <form-list name="ListCategoryMembers" list="productCategories" skip-form="true">
+                            <field name="productCategoryId"><default-field title="Category ID"><display/></default-field></field>
+                            <field name="fromDate"><default-field title="From Date"><display/></default-field></field>
+                            <field name="thruDate"><default-field title="Thru Date"><display/></default-field></field>
+                            <field name="status">
+                                <default-field title="Status">
+                                    <label text="${(thruDate != null &amp;&amp; thruDate.before(ec.user.nowTimestamp)) ? 'Expired' : 'Active'}"/>
+                                </default-field>
+                            </field>
+                            <field name="expireLink">
+                                <default-field title="Action">
+                                    <if condition="thruDate == null || thruDate.after(ec.user.nowTimestamp)">
+                                        <link url="expireCategoryMember" text="Expire" link-type="anchor">
+                                            <parameter name="productId"/>
+                                            <parameter name="productCategoryId"/>
+                                            <parameter name="fromDate"/>
+                                        </link>
+                                    </if>
+                                </default-field>
+                            </field>
+                        </form-list>
+
+                        <container style="margin-top: 15px;">
+                            <label text="Assign to Category" style="h5"/>
+                            <form-single name="AddCategoryMemberForm" transition="addCategoryMember">
+                                <field name="productId" from="productId"><default-field><hidden/></default-field></field>
+                                <field name="productCategoryId">
+                                    <default-field title="Category">
+                                        <drop-down>
+                                            <option key="BROWSE_ROOT" text="Browse Root"/>
+                                            <option key="SEARCH" text="Search"/>
+                                            <option key="VIEW_ALLOW" text="View Allow"/>
+                                            <option key="PURCHASE_ALLOW" text="Purchase Allow"/>
+                                            <option key="LUXURY_TAX_CATEGORY" text="Luxury Tax Category"/>
+                                            <option key="PROMOTIONS" text="Promotions"/>
+                                            <option key="MOST_POPULAR" text="Most Popular"/>
+                                            <option key="WHATS_NEW" text="Whats New"/>
+                                        </drop-down>
+                                    </default-field>
+                                </field>
+                                <field name="fromDate" default="ec.user.nowTimestamp"><default-field title="From Date"><date-time/></default-field></field>
+                                <field name="submitButton"><default-field title="Assign"><submit/></default-field></field>
+                            </form-single>
+                        </container>
+                    </box-body>
+                </container-box>
+            </row-col>
+        </container-row>
+    </widgets>
+</screen>

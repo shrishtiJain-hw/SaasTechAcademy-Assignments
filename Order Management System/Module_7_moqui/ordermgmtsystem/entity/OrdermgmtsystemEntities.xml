@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/entity-definition-3.xsd">
+
+    <!-- ===================== ORDER DOMAIN ===================== -->
+
+    <entity entity-name="OmsOrderHeader" package="ordermgmtsystem">
+        <field name="orderId" type="id" is-pk="true"/>
+        <field name="statusId" type="id"/>
+        <field name="orderDate" type="date-time"/>
+        <field name="orderSource" type="text-medium"/>
+        <field name="orderType" type="text-medium"/>
+        <field name="orderSubTotal" type="number-decimal"/>
+        <field name="taxSubTotal" type="number-decimal"/>
+        <field name="discount" type="number-decimal"/>
+        <field name="currency" type="text-medium"/>
+        <field name="lastDateToReturnTimeStamp" type="date-time"/>
+        <field name="canReturn" type="text-medium"/>
+        <field name="displayOrderId" type="id"/>
+        <field name="storeId" type="id"/>
+        <field name="installationId" type="text-long"/>
+        <field name="email" type="text-long"/>
+    </entity>
+
+    <entity entity-name="OmsOrderPart" package="ordermgmtsystem">
+        <field name="orderId" type="id" is-pk="true"/>
+        <field name="orderPartSeqId" type="id" is-pk="true"/>
+        <field name="customerPartyId" type="id"/>
+        <field name="vendorPartyId" type="id"/>
+        <field name="postalContactMechId" type="id"/>
+        <field name="telecomContactMechId" type="id"/>
+        <field name="statusId" type="id"/>
+        <field name="partTotal" type="number-decimal"/>
+        <field name="shipmentMethodEnumId" type="id"/>
+        <field name="estimatedDeliveryDate" type="date-time"/>
+
+        <relationship type="one" related="ordermgmtsystem.OmsOrderHeader">
+            <key-map field-name="orderId"/>
+        </relationship>
+        <relationship type="one" related="relationshipmgr.RmParty">
+            <key-map field-name="customerPartyId" related-field-name="partyId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="OmsOrderItem" package="ordermgmtsystem">
+        <field name="orderId" type="id" is-pk="true"/>
+        <field name="orderPartSeqId" type="id" is-pk="true"/>
+        <field name="orderItemSeqId" type="id" is-pk="true"/>
+        <field name="productId" type="id"/>
+        <field name="quantity" type="number-decimal"/>
+        <field name="unitPrice" type="number-decimal"/>
+        <field name="itemStatus" type="id"/>
+        <field name="externalId" type="id"/>
+        <field name="color" type="text-medium"/>
+        <field name="fulfillmentType" type="text-medium"/>
+        <field name="fulfillmentSubType" type="text-medium"/>
+        <field name="omniFulfillmentType" type="text-medium"/>
+        <field name="returnsEligibility" type="text-medium"/>
+        <field name="gtin" type="text-medium"/>
+        <field name="imageURL" type="text-long"/>
+
+        <relationship type="one" related="ordermgmtsystem.OmsOrderPart">
+            <key-map field-name="orderId"/>
+            <key-map field-name="orderPartSeqId"/>
+        </relationship>
+        <relationship type="one" related="productinformationmgr.PimProduct">
+            <key-map field-name="productId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="OmsOrderContactMech" package="ordermgmtsystem">
+        <field name="orderId" type="id" is-pk="true"/>
+        <field name="contactMechPurposeTypeId" type="id" is-pk="true"/>
+        <field name="contactMechId" type="id" is-pk="true"/>
+
+        <relationship type="one" related="ordermgmtsystem.OmsOrderHeader">
+            <key-map field-name="orderId"/>
+        </relationship>
+        <relationship type="one" related="relationshipmgr.RmContactMech">
+            <key-map field-name="contactMechId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="OmsOrderPaymentPreference" package="ordermgmtsystem">
+        <field name="orderPaymentPreferenceId" type="id" is-pk="true"/>
+        <field name="orderId" type="id"/>
+        <field name="orderPartSeqId" type="id"/>
+        <field name="paymentMethod" type="text-medium"/>
+        <field name="amountAuthorized" type="number-decimal"/>
+        <field name="transactionId" type="text-long"/>
+        <field name="paymentStatus" type="id"/>
+        <field name="paymentDevice" type="text-medium"/>
+        <field name="paymentSequenceNumber" type="text-medium"/>
+
+        <relationship type="one" related="ordermgmtsystem.OmsOrderHeader">
+            <key-map field-name="orderId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="OmsOrderAdjustment" package="ordermgmtsystem">
+        <field name="orderAdjustmentId" type="id" is-pk="true"/>
+        <field name="orderId" type="id"/>
+        <field name="orderPartSeqId" type="id"/>
+        <field name="orderItemSeqId" type="id"/>
+        <field name="priceAdjustmentType" type="id"/>
+        <field name="amount" type="number-decimal"/>
+        <field name="description" type="text-long"/>
+
+        <relationship type="one" related="ordermgmtsystem.OmsOrderHeader">
+            <key-map field-name="orderId"/>
+        </relationship>
+    </entity>
+
+    <!-- ===================== RETURN DOMAIN ===================== -->
+
+    <entity entity-name="OmsReturnHeader" package="ordermgmtsystem">
+        <field name="returnId" type="id" is-pk="true"/>
+        <field name="fromPartyId" type="id"/>
+        <field name="toPartyId" type="id"/>
+        <field name="returnDate" type="date-time"/>
+        <field name="statusId" type="id"/>
+
+        <relationship type="one" related="relationshipmgr.RmParty">
+            <key-map field-name="fromPartyId" related-field-name="partyId"/>
+        </relationship>
+        <relationship type="one" related="relationshipmgr.RmParty">
+            <key-map field-name="toPartyId" related-field-name="partyId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="OmsReturnItem" package="ordermgmtsystem">
+        <field name="returnId" type="id" is-pk="true"/>
+        <field name="returnItemSeqId" type="id" is-pk="true"/>
+        <field name="orderId" type="id"/>
+        <field name="orderPartSeqId" type="id"/>
+        <field name="orderItemSeqId" type="id"/>
+        <field name="returnQuantity" type="number-decimal"/>
+        <field name="receivedQuantity" type="number-decimal"/>
+        <field name="returnReasonEnumId" type="id"/>
+        <field name="returnResponseEnumId" type="id"/>
+        <field name="returnPrice" type="number-decimal"/>
+
+        <relationship type="one" related="ordermgmtsystem.OmsReturnHeader">
+            <key-map field-name="returnId"/>
+        </relationship>
+        <relationship type="one" related="ordermgmtsystem.OmsOrderItem">
+            <key-map field-name="orderId"/>
+            <key-map field-name="orderPartSeqId"/>
+            <key-map field-name="orderItemSeqId"/>
+        </relationship>
+    </entity>
+
+    <!-- ===================== SHIPMENT DOMAIN ===================== -->
+
+    <entity entity-name="OmsShipment" package="ordermgmtsystem">
+        <field name="shipmentId" type="id" is-pk="true"/>
+        <field name="shipmentTypeEnumId" type="id"/>
+        <field name="fromPartyId" type="id"/>
+        <field name="toPartyId" type="id"/>
+        <field name="estimatedShipDate" type="date-time"/>
+        <field name="statusId" type="id"/>
+        <field name="estimatedShipCost" type="number-decimal"/>
+        <field name="costUomId" type="id"/>
+        <field name="binLocationNumber" type="number-decimal"/>
+
+        <relationship type="one" related="relationshipmgr.RmParty">
+            <key-map field-name="fromPartyId" related-field-name="partyId"/>
+        </relationship>
+        <relationship type="one" related="relationshipmgr.RmParty">
+            <key-map field-name="toPartyId" related-field-name="partyId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="OmsShipmentItem" package="ordermgmtsystem">
+        <field name="shipmentId" type="id" is-pk="true"/>
+        <field name="productId" type="id" is-pk="true"/>
+        <field name="quantity" type="number-decimal"/>
+
+        <relationship type="one" related="ordermgmtsystem.OmsShipment">
+            <key-map field-name="shipmentId"/>
+        </relationship>
+        <relationship type="one" related="productinformationmgr.PimProduct">
+            <key-map field-name="productId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="OmsShipmentPackage" package="ordermgmtsystem">
+        <field name="shipmentId" type="id" is-pk="true"/>
+        <field name="shipmentPackageSeqId" type="id" is-pk="true"/>
+        <field name="weight" type="number-decimal"/>
+        <field name="weightUomId" type="id"/>
+
+        <relationship type="one" related="ordermgmtsystem.OmsShipment">
+            <key-map field-name="shipmentId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="OmsShipmentPackageContent" package="ordermgmtsystem">
+        <field name="shipmentId" type="id" is-pk="true"/>
+        <field name="shipmentPackageSeqId" type="id" is-pk="true"/>
+        <field name="productId" type="id" is-pk="true"/>
+        <field name="quantity" type="number-decimal"/>
+
+        <relationship type="one" related="ordermgmtsystem.OmsShipmentPackage">
+            <key-map field-name="shipmentId"/>
+            <key-map field-name="shipmentPackageSeqId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="OmsShipmentRouteSegment" package="ordermgmtsystem">
+        <field name="shipmentId" type="id" is-pk="true"/>
+        <field name="shipmentRouteSegmentSeqId" type="id" is-pk="true"/>
+        <field name="carrierPartyId" type="id"/>
+        <field name="shipmentMethodEnumId" type="id"/>
+        <field name="originPostalContactMechId" type="id"/>
+        <field name="destPostalContactMechId" type="id"/>
+
+        <relationship type="one" related="ordermgmtsystem.OmsShipment">
+            <key-map field-name="shipmentId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="OmsShipmentPackageRouteSeg" package="ordermgmtsystem">
+        <field name="shipmentId" type="id" is-pk="true"/>
+        <field name="shipmentPackageSeqId" type="id" is-pk="true"/>
+        <field name="shipmentRouteSegmentSeqId" type="id" is-pk="true"/>
+        <field name="trackingCode" type="text-medium"/>
+        <field name="labelImage" type="text-long"/>
+        <field name="labelPrinted" type="text-medium"/>
+
+        <relationship type="one" related="ordermgmtsystem.OmsShipmentPackage">
+            <key-map field-name="shipmentId"/>
+            <key-map field-name="shipmentPackageSeqId"/>
+        </relationship>
+        <relationship type="one" related="ordermgmtsystem.OmsShipmentRouteSegment">
+            <key-map field-name="shipmentId"/>
+            <key-map field-name="shipmentRouteSegmentSeqId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="OmsShipmentItemSource" package="ordermgmtsystem">
+        <field name="shipmentId" type="id" is-pk="true"/>
+        <field name="orderId" type="id" is-pk="true"/>
+        <field name="orderPartSeqId" type="id" is-pk="true"/>
+        <field name="orderItemSeqId" type="id" is-pk="true"/>
+        <field name="quantity" type="number-decimal"/>
+        <field name="statusId" type="id"/>
+
+        <relationship type="one" related="ordermgmtsystem.OmsShipment">
+            <key-map field-name="shipmentId"/>
+        </relationship>
+        <relationship type="one" related="ordermgmtsystem.OmsOrderItem">
+            <key-map field-name="orderId"/>
+            <key-map field-name="orderPartSeqId"/>
+            <key-map field-name="orderItemSeqId"/>
+        </relationship>
+    </entity>
+
+    <!-- ===================== VIEW ENTITIES ===================== -->
+
+    <view-entity entity-name="FindOrderView" package="ordermgmtsystem">
+        <member-entity entity-alias="OH" entity-name="ordermgmtsystem.OmsOrderHeader"/>
+        <member-entity entity-alias="OP" entity-name="ordermgmtsystem.OmsOrderPart" join-from-alias="OH" join-optional="true">
+            <key-map field-name="orderId"/>
+        </member-entity>
+        <member-entity entity-alias="PER" entity-name="relationshipmgr.RmPerson" join-from-alias="OP" join-optional="true">
+            <key-map field-name="customerPartyId" related-field-name="partyId"/>
+        </member-entity>
+        <member-entity entity-alias="OCM" entity-name="ordermgmtsystem.OmsOrderContactMech" join-from-alias="OH" join-optional="true">
+            <key-map field-name="orderId"/>
+        </member-entity>
+        <member-entity entity-alias="PA" entity-name="relationshipmgr.RmPostalAddress" join-from-alias="OCM" join-optional="true">
+            <key-map field-name="contactMechId"/>
+        </member-entity>
+        <member-entity entity-alias="OPP" entity-name="ordermgmtsystem.OmsOrderPaymentPreference" join-from-alias="OH" join-optional="true">
+            <key-map field-name="orderId"/>
+        </member-entity>
+
+        <alias-all entity-alias="OH"/>
+        <alias-all entity-alias="OP">
+            <exclude field="statusId"/>
+        </alias-all>
+        <alias entity-alias="PER" name="customerFirstName" field="firstName"/>
+        <alias entity-alias="PER" name="customerLastName" field="lastName"/>
+        <alias entity-alias="PA" name="shippingAddress1" field="address1"/>
+        <alias entity-alias="PA" name="shippingAddress2" field="address2"/>
+        <alias entity-alias="PA" name="shippingCity" field="city"/>
+        <alias entity-alias="PA" name="shippingPostalCode" field="postalCode"/>
+        <alias entity-alias="OPP" name="paymentStatus" field="paymentStatus"/>
+        <alias entity-alias="OPP" name="paymentMethod" field="paymentMethod"/>
+    </view-entity>
+
+</entities>

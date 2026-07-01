@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/entity-definition-3.xsd">
+
+    <!-- ========================================================= -->
+    <!-- Type / Classification Entities                            -->
+    <!-- ========================================================= -->
+
+    <entity entity-name="PimProductType" package="productinformationmgr">
+        <field name="productTypeId" type="id" is-pk="true"/>
+        <field name="parentTypeId" type="id"/>
+        <field name="description" type="text-medium"/>
+        <relationship type="one" related="productinformationmgr.PimProductType" title="Parent">
+            <key-map field-name="parentTypeId" related-field-name="productTypeId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="PimProductContentType" package="productinformationmgr">
+        <field name="productContentTypeId" type="id" is-pk="true"/>
+        <field name="description" type="text-medium"/>
+    </entity>
+
+    <entity entity-name="PimProductPriceType" package="productinformationmgr">
+        <field name="productPriceTypeId" type="id" is-pk="true"/>
+        <field name="description" type="text-medium"/>
+    </entity>
+
+    <entity entity-name="PimProductDimensionType" package="productinformationmgr">
+        <field name="dimensionTypeId" type="id" is-pk="true"/>
+        <field name="description" type="text-medium"/>
+    </entity>
+
+    <entity entity-name="PimProductAssocType" package="productinformationmgr">
+        <field name="productAssocTypeId" type="id" is-pk="true"/>
+        <field name="description" type="text-medium"/>
+    </entity>
+
+    <entity entity-name="PimProductFeatureType" package="productinformationmgr">
+        <field name="productFeatureTypeId" type="id" is-pk="true"/>
+        <field name="description" type="text-medium"/>
+    </entity>
+
+    <entity entity-name="PimProductCategoryType" package="productinformationmgr">
+        <field name="productCategoryTypeId" type="id" is-pk="true"/>
+        <field name="description" type="text-medium"/>
+    </entity>
+
+    <entity entity-name="PimFacilityType" package="productinformationmgr">
+        <field name="facilityTypeId" type="id" is-pk="true"/>
+        <field name="description" type="text-medium"/>
+    </entity>
+
+    <entity entity-name="PimFacilityGroupType" package="productinformationmgr">
+        <field name="facilityGroupTypeId" type="id" is-pk="true"/>
+        <field name="description" type="text-medium"/>
+    </entity>
+
+    <!-- ========================================================= -->
+    <!-- Product Master & Extension Entities                       -->
+    <!-- ========================================================= -->
+
+    <entity entity-name="PimProduct" package="productinformationmgr">
+        <field name="productId" type="id" is-pk="true"/>
+        <field name="productName" type="text-medium"/>
+        <field name="productTypeId" type="id"/>
+        <field name="isVirtual" type="text-short"/> <!-- Y/N indicator -->
+        <field name="isVariant" type="text-short"/> <!-- Y/N indicator -->
+
+        <relationship type="one" related="productinformationmgr.PimProductType">
+            <key-map field-name="productTypeId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="PimProductContent" package="productinformationmgr">
+        <field name="productContentId" type="id" is-pk="true"/>
+        <field name="productId" type="id"/>
+        <field name="productContentTypeId" type="id"/>
+        <field name="contentLocation" type="text-medium"/>
+
+        <relationship type="one" related="productinformationmgr.PimProduct">
+            <key-map field-name="productId"/>
+        </relationship>
+        <relationship type="one" related="productinformationmgr.PimProductContentType">
+            <key-map field-name="productContentTypeId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="PimProductPrice" package="productinformationmgr">
+        <field name="productPriceId" type="id" is-pk="true"/>
+        <field name="productId" type="id"/>
+        <field name="productPriceTypeId" type="id"/>
+        <field name="price" type="number-decimal"/>
+
+        <relationship type="one" related="productinformationmgr.PimProduct">
+            <key-map field-name="productId"/>
+        </relationship>
+        <relationship type="one" related="productinformationmgr.PimProductPriceType">
+            <key-map field-name="productPriceTypeId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="PimProductDimension" package="productinformationmgr">
+        <field name="productId" type="id" is-pk="true"/>
+        <field name="dimensionTypeId" type="id" is-pk="true"/>
+        <field name="dimensionValue" type="number-decimal"/>
+        <field name="valueUomId" type="id"/>
+
+        <relationship type="one" related="productinformationmgr.PimProduct">
+            <key-map field-name="productId"/>
+        </relationship>
+        <relationship type="one" related="productinformationmgr.PimProductDimensionType">
+            <key-map field-name="dimensionTypeId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="PimProductAssoc" package="productinformationmgr">
+        <field name="productId" type="id" is-pk="true"/>
+        <field name="toProductId" type="id" is-pk="true"/>
+        <field name="productAssocTypeId" type="id" is-pk="true"/>
+        <field name="fromDate" type="date-time" is-pk="true"/>
+        <field name="thruDate" type="date-time"/>
+
+        <relationship type="one" related="productinformationmgr.PimProduct">
+            <key-map field-name="productId"/>
+        </relationship>
+        <relationship type="one" related="productinformationmgr.PimProduct" title="To">
+            <key-map field-name="toProductId" related-field-name="productId"/>
+        </relationship>
+        <relationship type="one" related="productinformationmgr.PimProductAssocType">
+            <key-map field-name="productAssocTypeId"/>
+        </relationship>
+    </entity>
+
+    <!-- ========================================================= -->
+    <!-- Product Category Patterns                                 -->
+    <!-- ========================================================= -->
+
+    <entity entity-name="PimProductCategory" package="productinformationmgr">
+        <field name="productCategoryId" type="id" is-pk="true"/>
+        <field name="productCategoryTypeId" type="id"/>
+        <field name="parentProductCategoryId" type="id"/>
+        <field name="categoryName" type="text-medium"/>
+
+        <relationship type="one" related="productinformationmgr.PimProductCategoryType">
+            <key-map field-name="productCategoryTypeId"/>
+        </relationship>
+        <relationship type="one" related="productinformationmgr.PimProductCategory" title="Parent">
+            <key-map field-name="parentProductCategoryId" related-field-name="productCategoryId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="PimProductCategoryMember" package="productinformationmgr">
+        <field name="productId" type="id" is-pk="true"/>
+        <field name="productCategoryId" type="id" is-pk="true"/>
+        <field name="fromDate" type="date-time" is-pk="true"/>
+        <field name="thruDate" type="date-time"/>
+
+        <relationship type="one" related="productinformationmgr.PimProduct">
+            <key-map field-name="productId"/>
+        </relationship>
+        <relationship type="one" related="productinformationmgr.PimProductCategory">
+            <key-map field-name="productCategoryId"/>
+        </relationship>
+    </entity>
+
+    <!-- ========================================================= -->
+    <!-- Product Feature Patterns                                  -->
+    <!-- ========================================================= -->
+
+    <entity entity-name="PimProductFeature" package="productinformationmgr">
+        <field name="productFeatureId" type="id" is-pk="true"/>
+        <field name="productFeatureTypeId" type="id"/>
+
+        <relationship type="one" related="productinformationmgr.PimProductFeatureType">
+            <key-map field-name="productFeatureTypeId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="PimProductFeatureAppl" package="productinformationmgr">
+        <field name="productId" type="id" is-pk="true"/>
+        <field name="productFeatureId" type="id" is-pk="true"/>
+        <field name="fromDate" type="date-time" is-pk="true"/>
+        <field name="thruDate" type="date-time"/>
+        <field name="applTypeEnumId" type="id"/>
+
+        <relationship type="one" related="productinformationmgr.PimProduct">
+            <key-map field-name="productId"/>
+        </relationship>
+        <relationship type="one" related="productinformationmgr.PimProductFeature">
+            <key-map field-name="productFeatureId"/>
+        </relationship>
+    </entity>
+
+    <!-- ========================================================= -->
+    <!-- Facility Data Model                                       -->
+    <!-- ========================================================= -->
+
+    <entity entity-name="PimFacility" package="productinformationmgr">
+        <field name="facilityId" type="id" is-pk="true"/>
+        <field name="facilityTypeId" type="id"/>
+        <field name="facilityName" type="text-medium"/>
+        <field name="parentFacilityId" type="id"/>
+
+        <relationship type="one" related="productinformationmgr.PimFacilityType">
+            <key-map field-name="facilityTypeId"/>
+        </relationship>
+        <relationship type="one" related="productinformationmgr.PimFacility" title="Parent">
+            <key-map field-name="parentFacilityId" related-field-name="facilityId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="PimFacilityLocation" package="productinformationmgr">
+        <field name="facilityId" type="id" is-pk="true"/>
+        <field name="locationSeqId" type="id" is-pk="true"/>
+        <field name="areaId" type="id"/>
+        <field name="aisleId" type="id"/>
+        <field name="sectionId" type="id"/>
+        <field name="levelId" type="id"/>
+        <field name="positionId" type="id"/>
+
+        <relationship type="one" related="productinformationmgr.PimFacility">
+            <key-map field-name="facilityId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="PimProductFacility" package="productinformationmgr">
+        <field name="facilityId" type="id" is-pk="true"/>
+        <field name="productId" type="id" is-pk="true"/>
+
+        <relationship type="one" related="productinformationmgr.PimFacility">
+            <key-map field-name="facilityId"/>
+        </relationship>
+        <relationship type="one" related="productinformationmgr.PimProduct">
+            <key-map field-name="productId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="PimProductFacilityLocation" package="productinformationmgr">
+        <field name="productId" type="id" is-pk="true"/>
+        <field name="facilityId" type="id" is-pk="true"/>
+        <field name="locationSeqId" type="id" is-pk="true"/>
+
+        <relationship type="one" related="productinformationmgr.PimProduct">
+            <key-map field-name="productId"/>
+        </relationship>
+        <relationship type="one" related="productinformationmgr.PimFacilityLocation">
+            <key-map field-name="facilityId"/>
+            <key-map field-name="locationSeqId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="PimFacilityParty" package="productinformationmgr">
+        <field name="facilityId" type="id" is-pk="true"/>
+        <field name="partyId" type="id" is-pk="true"/>
+        <field name="roleTypeId" type="id" is-pk="true"/>
+
+        <relationship type="one" related="productinformationmgr.PimFacility">
+            <key-map field-name="facilityId"/>
+        </relationship>
+        <relationship type="one" related="relationshipmgr.RmParty">
+            <key-map field-name="partyId"/>
+        </relationship>
+        <relationship type="one" related="relationshipmgr.RmPartyRole">
+            <key-map field-name="partyId"/>
+            <key-map field-name="roleTypeId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="PimFacilityGroup" package="productinformationmgr">
+        <field name="facilityGroupId" type="id" is-pk="true"/>
+        <field name="facilityGroupTypeId" type="id"/>
+        <field name="parentGroupId" type="id"/>
+        <field name="facilityGroupName" type="text-medium"/>
+
+        <relationship type="one" related="productinformationmgr.PimFacilityGroupType">
+            <key-map field-name="facilityGroupTypeId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="PimFacilityGroupMember" package="productinformationmgr">
+        <field name="facilityGroupId" type="id" is-pk="true"/>
+        <field name="facilityId" type="id" is-pk="true"/>
+
+        <relationship type="one" related="productinformationmgr.PimFacilityGroup">
+            <key-map field-name="facilityGroupId"/>
+        </relationship>
+        <relationship type="one" related="productinformationmgr.PimFacility">
+            <key-map field-name="facilityId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="PimFacilityContactMech" package="productinformationmgr">
+        <field name="facilityId" type="id" is-pk="true"/>
+        <field name="contactMechId" type="id" is-pk="true"/>
+        <field name="contactMechPurposeTypeId" type="id" is-pk="true"/>
+        <field name="fromDate" type="date-time" is-pk="true"/>
+        <field name="thruDate" type="date-time"/>
+
+        <relationship type="one" related="productinformationmgr.PimFacility">
+            <key-map field-name="facilityId"/>
+        </relationship>
+        <relationship type="one" related="relationshipmgr.RmContactMech">
+            <key-map field-name="contactMechId"/>
+        </relationship>
+        <relationship type="one" related="relationshipmgr.RmContactMechPurpose">
+            <key-map field-name="contactMechPurposeTypeId" related-field-name="contactMechPurposeId"/>
+        </relationship>
+    </entity>
+
+</entities>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-facade-xml>
+
+    <!-- ===================== TYPES ===================== -->
+
+    <relationshipmgr.RmContactMechPurpose contactMechPurposeId="WORK" description="Work"/>
+    <relationshipmgr.RmContactMechPurpose contactMechPurposeId="HOME" description="Home"/>
+    <relationshipmgr.RmContactMechPurpose contactMechPurposeId="OFFICE" description="Office"/>
+    <relationshipmgr.RmContactMechPurpose contactMechPurposeId="BILLING" description="Billing"/>
+    <relationshipmgr.RmContactMechPurpose contactMechPurposeId="SHIPPING" description="Shipping"/>
+    <relationshipmgr.RmContactMechPurpose contactMechPurposeId="GENERAL" description="General correspondence address"/>
+
+    <!-- ===================== PARTIES ===================== -->
+
+    <!-- College as Organization -->
+    <relationshipmgr.RmParty partyId="ORG_COLLEGE" partyTypeId="ORGANIZATION"/>
+    <relationshipmgr.RmOrganization partyId="ORG_COLLEGE" organizationName="Greenfield Institute of Technology"/>
+
+    <!-- Departments as Organizations -->
+    <relationshipmgr.RmParty partyId="ORG_CS_DEPT" partyTypeId="ORGANIZATION"/>
+    <relationshipmgr.RmOrganization partyId="ORG_CS_DEPT" organizationName="Department of Computer Science"/>
+
+    <relationshipmgr.RmParty partyId="ORG_MATH_DEPT" partyTypeId="ORGANIZATION"/>
+    <relationshipmgr.RmOrganization partyId="ORG_MATH_DEPT" organizationName="Department of Mathematics"/>
+
+    <!-- Students as Persons -->
+    <relationshipmgr.RmParty partyId="PER_STU001" partyTypeId="PERSON"/>
+    <relationshipmgr.RmPerson partyId="PER_STU001" firstName="Shrishti" lastName="Jain" birthDate="2002-04-15"/>
+
+    <relationshipmgr.RmParty partyId="PER_STU002" partyTypeId="PERSON"/>
+    <relationshipmgr.RmPerson partyId="PER_STU002" firstName="Rahul" lastName="Sharma" birthDate="2001-09-22"/>
+
+    <!-- Teaching Staff as Persons -->
+    <relationshipmgr.RmParty partyId="PER_FAC001" partyTypeId="PERSON"/>
+    <relationshipmgr.RmPerson partyId="PER_FAC001" firstName="Anita" lastName="Verma" birthDate="1978-03-10"/>
+
+    <relationshipmgr.RmParty partyId="PER_FAC002" partyTypeId="PERSON"/>
+    <relationshipmgr.RmPerson partyId="PER_FAC002" firstName="Rajesh" lastName="Kumar" birthDate="1972-11-05"/>
+
+    <!-- ===================== ROLES ===================== -->
+
+    <relationshipmgr.RmPartyRole partyId="ORG_COLLEGE" roleTypeId="INTERNAL_ORGANIZATION"/>
+    <relationshipmgr.RmPartyRole partyId="ORG_CS_DEPT" roleTypeId="DEPARTMENT"/>
+    <relationshipmgr.RmPartyRole partyId="ORG_MATH_DEPT" roleTypeId="DEPARTMENT"/>
+
+    <relationshipmgr.RmPartyRole partyId="PER_STU001" roleTypeId="STUDENT"/>
+    <relationshipmgr.RmPartyRole partyId="PER_STU002" roleTypeId="STUDENT"/>
+
+    <relationshipmgr.RmPartyRole partyId="PER_FAC001" roleTypeId="FACULTY"/>
+    <relationshipmgr.RmPartyRole partyId="PER_FAC002" roleTypeId="FACULTY"/>
+
+    <!-- ===================== CONTACT MECHANISMS ===================== -->
+
+    <!-- College Contacts -->
+    <relationshipmgr.RmContactMech contactMechId="CM_COL_POST" contactMechTypeId="POSTAL_ADDRESS"/>
+    <relationshipmgr.RmPostalAddress contactMechId="CM_COL_POST" toName="Greenfield Institute of Technology" attnName="Main Office" address1="123 Academic Blvd" city="Metropolis" postalCode="12345"/>
+    <relationshipmgr.RmPartyContactMech partyId="ORG_COLLEGE" contactMechId="CM_COL_POST" contactMechPurposeId="OFFICE" fromDate="2020-01-01 00:00:00.0"/>
+
+    <relationshipmgr.RmContactMech contactMechId="CM_COL_TEL" contactMechTypeId="TELECOM_NUMBER"/>
+    <relationshipmgr.RmTelecomNumber contactMechId="CM_COL_TEL" countryCode="1" areaCode="555" contactNumber="0100"/>
+    <relationshipmgr.RmPartyContactMech partyId="ORG_COLLEGE" contactMechId="CM_COL_TEL" contactMechPurposeId="OFFICE" fromDate="2020-01-01 00:00:00.0"/>
+
+    <!-- CS Dept Contacts -->
+    <relationshipmgr.RmContactMech contactMechId="CM_CS_POST" contactMechTypeId="POSTAL_ADDRESS"/>
+    <relationshipmgr.RmPostalAddress contactMechId="CM_CS_POST" toName="Department of Computer Science" attnName="CS Desk" address1="123 Academic Blvd" address2="Room 401" city="Metropolis" postalCode="12345"/>
+    <relationshipmgr.RmPartyContactMech partyId="ORG_CS_DEPT" contactMechId="CM_CS_POST" contactMechPurposeId="OFFICE" fromDate="2020-01-01 00:00:00.0"/>
+
+    <!-- Student Shrishti Contacts -->
+    <relationshipmgr.RmContactMech contactMechId="CM_STU1_EMAIL" contactMechTypeId="EMAIL_ADDRESS" infoString="shrishti@example.com"/>
+    <relationshipmgr.RmPartyContactMech partyId="PER_STU001" contactMechId="CM_STU1_EMAIL" contactMechPurposeId="WORK" fromDate="2020-09-01 00:00:00.0"/>
+
+    <relationshipmgr.RmContactMech contactMechId="CM_STU1_TEL" contactMechTypeId="TELECOM_NUMBER"/>
+    <relationshipmgr.RmTelecomNumber contactMechId="CM_STU1_TEL" countryCode="91" areaCode="987" contactNumber="654321"/>
+    <relationshipmgr.RmPartyContactMech partyId="PER_STU001" contactMechId="CM_STU1_TEL" contactMechPurposeId="HOME" fromDate="2020-09-01 00:00:00.0"/>
+
+    <relationshipmgr.RmContactMech contactMechId="CM_STU1_ADDR" contactMechTypeId="POSTAL_ADDRESS"/>
+    <relationshipmgr.RmPostalAddress contactMechId="CM_STU1_ADDR" toName="Shrishti Jain" address1="456 Residency Rd" city="New Delhi" postalCode="110001"/>
+    <relationshipmgr.RmPartyContactMech partyId="PER_STU001" contactMechId="CM_STU1_ADDR" contactMechPurposeId="HOME" fromDate="2020-09-01 00:00:00.0"/>
+
+    <!-- Student Rahul Contacts -->
+    <relationshipmgr.RmContactMech contactMechId="CM_STU2_EMAIL" contactMechTypeId="EMAIL_ADDRESS" infoString="rahul@example.com"/>
+    <relationshipmgr.RmPartyContactMech partyId="PER_STU002" contactMechId="CM_STU2_EMAIL" contactMechPurposeId="WORK" fromDate="2020-09-01 00:00:00.0"/>
+
+    <!-- Faculty Anita Contacts -->
+    <relationshipmgr.RmContactMech contactMechId="CM_FAC1_EMAIL" contactMechTypeId="EMAIL_ADDRESS" infoString="anita.verma@example.com"/>
+    <relationshipmgr.RmPartyContactMech partyId="PER_FAC001" contactMechId="CM_FAC1_EMAIL" contactMechPurposeId="WORK" fromDate="2015-07-01 00:00:00.0"/>
+
+    <!-- Faculty Rajesh Contacts -->
+    <relationshipmgr.RmContactMech contactMechId="CM_FAC2_EMAIL" contactMechTypeId="EMAIL_ADDRESS" infoString="rajesh.kumar@example.com"/>
+    <relationshipmgr.RmPartyContactMech partyId="PER_FAC002" contactMechId="CM_FAC2_EMAIL" contactMechPurposeId="WORK" fromDate="2010-06-01 00:00:00.0"/>
+    <!-- ===================== SECURITY ===================== -->
+
+    <moqui.security.ArtifactGroup artifactGroupId="CUSTOM_ASSIGNMENT" description="Custom Assignment Screens"/>
+    <moqui.security.ArtifactGroupMember artifactGroupId="CUSTOM_ASSIGNMENT" artifactName="component://relationshipmgr/.*" artifactTypeEnumId="AT_XML_SCREEN" nameIsPattern="Y" inheritAuthz="Y"/>
+    <moqui.security.ArtifactGroupMember artifactGroupId="CUSTOM_ASSIGNMENT" artifactName="component://productinformationmgr/.*" artifactTypeEnumId="AT_XML_SCREEN" nameIsPattern="Y" inheritAuthz="Y"/>
+    <moqui.security.ArtifactGroupMember artifactGroupId="CUSTOM_ASSIGNMENT" artifactName="component://ordermgmtsystem/.*" artifactTypeEnumId="AT_XML_SCREEN" nameIsPattern="Y" inheritAuthz="Y"/>
+
+    <moqui.security.ArtifactAuthz artifactAuthzId="CUSTOM_ASSIGNMENT_ADMIN" userGroupId="ADMIN" artifactGroupId="CUSTOM_ASSIGNMENT" authzTypeEnumId="AUTHZT_ALWAYS" authzActionEnumId="AUTHZA_ALL"/>
+
+</entity-facade-xml>

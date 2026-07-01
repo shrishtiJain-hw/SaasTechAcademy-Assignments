@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-3.xsd"
+    default-menu-title="Order Details">
+
+    <parameter name="orderId" required="true"/>
+
+    <transition name="updateAddress">
+        <service-call name="ordermgmtsystem.OrderServices.update#OrderShippingAddress"/>
+        <default-response url="."/>
+    </transition>
+
+    <transition name="updateShipGroup">
+        <service-call name="ordermgmtsystem.OrderServices.create#OrderItemShipGroup"/>
+        <default-response url="."/>
+    </transition>
+
+    <actions>
+        <entity-find-one entity-name="ordermgmtsystem.OmsOrderHeader" value-field="orderHeader"/>
+        <if condition="orderHeader == null">
+            <message error="true">Order not found with ID ${orderId}</message>
+        </if>
+
+        <entity-find entity-name="ordermgmtsystem.OmsOrderPart" list="orderParts">
+            <econdition field-name="orderId" from="orderId"/>
+        </entity-find>
+        <set field="orderPart" from="orderParts ? orderParts[0] : null"/>
+
+        <entity-find entity-name="ordermgmtsystem.OmsOrderItem" list="orderItems">
+            <econdition field-name="orderId" from="orderId"/>
+            <order-by field-name="orderItemSeqId"/>
+        </entity-find>
+
+        <entity-find entity-name="ordermgmtsystem.OmsOrderPaymentPreference" list="paymentPreferences">
+            <econdition field-name="orderId" from="orderId"/>
+        </entity-find>
+        <set field="paymentPreference" from="paymentPreferences ? paymentPreferences[0] : null"/>
+    </actions>
+
+    <widgets>
+        <container style="margin-bottom: 10px;">
+            <link url="../OrderList" text="Back to List" link-type="anchor"/>
+        </container>
+
+        <!-- Order Information Card -->
+        <container-row>
+            <row-col lg="6" md="6" sm="12">
+                <container-box>
+                    <box-header title="Order Information - #${orderId}"/>
+                    <box-body>
+                        <form-single name="DisplayOrderInfo" map="orderHeader">
+                            <field name="orderId"><default-field title="Order ID"><display/></default-field></field>
+                            <field name="orderDate"><default-field title="Order Date"><display/></default-field></field>
+                            <field name="statusId"><default-field title="Order Status"><display/></default-field></field>
+                            <field name="orderSource"><default-field title="Order Source"><display/></default-field></field>
+                            <field name="orderSubTotal"><default-field title="SubTotal"><display/></default-field></field>
+                            <field name="taxSubTotal"><default-field title="Tax (5%)"><display/></default-field></field>
+                            <field name="total"><default-field title="Total Amount"><display text="${ec.l10n.format(orderSubTotal + taxSubTotal, '$#,##0.00')}"/></default-field></field>
+                        </form-single>
+                    </box-body>
+                </container-box>
+            </row-col>
+
+            <!-- Shipping & Shipment Group -->
+            <row-col lg="6" md="6" sm="12">
+                <container-box>
+                    <box-header title="Shipping &amp; Logistics"/>
+                    <box-body>
+                        <form-single name="DisplayShippingInfo" map="orderPart">
+                            <field name="customerPartyId"><default-field title="Customer ID"><display/></default-field></field>
+                            <field name="postalContactMechId"><default-field title="Shipping Address ID"><display/></default-field></field>
+                            <field name="shipmentMethodEnumId"><default-field title="Shipment Method"><display/></default-field></field>
+                            <field name="estimatedDeliveryDate"><default-field title="Estimated Delivery"><display/></default-field></field>
+                        </form-single>
+
+                        <container style="margin-top: 15px;">
+                            <label text="Update Shipping Address" style="h5"/>
+                            <form-single name="UpdateAddressForm" transition="updateAddress">
+                                <field name="orderId" from="orderId"><default-field><hidden/></default-field></field>
+                                <field name="postalContactMechId"><default-field title="New Address ID (Contact Mech)"><text-line size="20"/></default-field></field>
+                                <field name="submitButton"><default-field title="Update Address"><submit/></default-field></field>
+                            </form-single>
+                        </container>
+
+                        <container style="margin-top: 15px;">
+                            <label text="Configure Delivery details" style="h5"/>
+                            <form-single name="UpdateShipmentForm" transition="updateShipGroup">
+                                <field name="orderId" from="orderId"><default-field><hidden/></default-field></field>
+                                <field name="shipmentMethodEnumId">
+                                    <default-field title="Method">
+                                        <drop-down>
+                                            <option key="GROUND" text="Ground Shipping"/>
+                                            <option key="EXPRESS" text="Express Delivery"/>
+                                            <option key="NEXT_DAY" text="Next Day Air"/>
+                                        </drop-down>
+                                    </default-field>
+                                </field>
+                                <field name="estimatedDeliveryDate"><default-field title="Delivery Date"><date-find/></default-field></field>
+                                <field name="submitButton"><default-field title="Update Logistics"><submit/></default-field></field>
+                            </form-single>
+                        </container>
+                    </box-body>
+                </container-box>
+            </row-col>
+        </container-row>
+
+        <!-- Order Items Section -->
+        <container-box>
+            <box-header title="Order Items"/>
+            <box-body>
+                <form-list name="ListOrderItems" list="orderItems" skip-form="true">
+                    <field name="orderItemSeqId"><default-field title="Item #"><display/></default-field></field>
+                    <field name="productId"><default-field title="Product ID"><display/></default-field></field>
+                    <field name="quantity"><default-field title="Quantity"><display/></default-field></field>
+                    <field name="unitPrice"><default-field title="Unit Price"><display/></default-field></field>
+                    <field name="itemTotal">
+                        <default-field title="Item Total">
+                            <display text="${ec.l10n.format(quantity * unitPrice, '$#,##0.00')}"/>
+                        </default-field>
+                    </field>
+                    <field name="itemStatus"><default-field title="Status"><display/></default-field></field>
+                </form-list>
+            </box-body>
+        </container-box>
+
+        <!-- Payment Details Section -->
+        <if condition="paymentPreference != null">
+            <container-box>
+                <box-header title="Payment Details"/>
+                <box-body>
+                    <form-single name="DisplayPaymentInfo" map="paymentPreference">
+                        <field name="paymentMethod"><default-field title="Payment Method"><display/></default-field></field>
+                        <field name="amountAuthorized"><default-field title="Amount Authorized"><display/></default-field></field>
+                        <field name="transactionId"><default-field title="Transaction ID"><display/></default-field></field>
+                        <field name="paymentStatus"><default-field title="Payment Status"><display/></default-field></field>
+                    </form-single>
+                </box-body>
+            </container-box>
+        </if>
+    </widgets>
+</screen>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/component-2.1.xsd"
+    name="productinformationmgr">
+
+    <resource-loader name="main" type="component"/>
+
+</component>

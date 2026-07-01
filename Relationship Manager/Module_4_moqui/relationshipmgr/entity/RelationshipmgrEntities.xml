@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entities xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/entity-definition-3.xsd">
+
+    <entity entity-name="RmParty" package="relationshipmgr">
+        <field name="partyId" type="id" is-pk="true"/>
+        <field name="partyTypeId" type="id"/> <!-- PERSON or ORGANIZATION -->
+    </entity>
+
+    <entity entity-name="RmPerson" package="relationshipmgr">
+        <field name="partyId" type="id" is-pk="true"/>
+        <field name="firstName" type="text-short"/>
+        <field name="lastName" type="text-short"/>
+        <field name="birthDate" type="date"/>
+
+        <relationship type="one" related="relationshipmgr.RmParty">
+            <key-map field-name="partyId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="RmOrganization" package="relationshipmgr">
+        <field name="partyId" type="id" is-pk="true"/>
+        <field name="organizationName" type="text-medium"/>
+
+        <relationship type="one" related="relationshipmgr.RmParty">
+            <key-map field-name="partyId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="RmPartyRole" package="relationshipmgr">
+        <field name="partyId" type="id" is-pk="true"/>
+        <field name="roleTypeId" type="id" is-pk="true"/>
+
+        <relationship type="one" related="relationshipmgr.RmParty">
+            <key-map field-name="partyId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="RmContactMech" package="relationshipmgr">
+        <field name="contactMechId" type="id" is-pk="true"/>
+        <field name="contactMechTypeId" type="id"/> <!-- TELECOM_NUMBER, POSTAL_ADDRESS, EMAIL_ADDRESS -->
+        <field name="infoString" type="text-medium"/>
+    </entity>
+
+    <entity entity-name="RmTelecomNumber" package="relationshipmgr">
+        <field name="contactMechId" type="id" is-pk="true"/>
+        <field name="countryCode" type="text-short"/>
+        <field name="areaCode" type="text-short"/>
+        <field name="contactNumber" type="text-medium"/>
+
+        <relationship type="one" related="relationshipmgr.RmContactMech">
+            <key-map field-name="contactMechId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="RmPostalAddress" package="relationshipmgr">
+        <field name="contactMechId" type="id" is-pk="true"/>
+        <field name="toName" type="text-short"/>
+        <field name="attnName" type="text-short"/>
+        <field name="address1" type="text-medium"/>
+        <field name="address2" type="text-medium"/>
+        <field name="city" type="text-short"/>
+        <field name="postalCode" type="text-short"/>
+
+        <relationship type="one" related="relationshipmgr.RmContactMech">
+            <key-map field-name="contactMechId"/>
+        </relationship>
+    </entity>
+
+    <entity entity-name="RmContactMechPurpose" package="relationshipmgr">
+        <field name="contactMechPurposeId" type="id" is-pk="true"/>
+        <field name="description" type="text-medium"/>
+    </entity>
+
+    <entity entity-name="RmPartyContactMech" package="relationshipmgr">
+        <field name="partyId" type="id" is-pk="true"/>
+        <field name="contactMechId" type="id" is-pk="true"/>
+        <field name="contactMechPurposeId" type="id" is-pk="true"/>
+        <field name="fromDate" type="date-time" is-pk="true"/>
+        <field name="thruDate" type="date-time"/>
+
+        <relationship type="one" related="relationshipmgr.RmParty">
+            <key-map field-name="partyId"/>
+        </relationship>
+        <relationship type="one" related="relationshipmgr.RmContactMech">
+            <key-map field-name="contactMechId"/>
+        </relationship>
+        <relationship type="one" related="relationshipmgr.RmContactMechPurpose">
+            <key-map field-name="contactMechPurposeId"/>
+        </relationship>
+    </entity>
+
+    <view-entity entity-name="RmPartyDetailView" package="relationshipmgr">
+        <member-entity entity-alias="PTY" entity-name="relationshipmgr.RmParty"/>
+        <member-entity entity-alias="PER" entity-name="relationshipmgr.RmPerson" join-from-alias="PTY" join-optional="true">
+            <key-map field-name="partyId"/>
+        </member-entity>
+        <member-entity entity-alias="ORG" entity-name="relationshipmgr.RmOrganization" join-from-alias="PTY" join-optional="true">
+            <key-map field-name="partyId"/>
+        </member-entity>
+
+        <alias-all entity-alias="PTY"/>
+        <alias entity-alias="PER" name="firstName"/>
+        <alias entity-alias="PER" name="lastName"/>
+        <alias entity-alias="ORG" name="organizationName"/>
+    </view-entity>
+
+</entities>

@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-3.xsd"
+    default-menu-title="Party Details">
+
+    <parameter name="partyId" required="true"/>
+
+    <transition name="updatePerson">
+        <service-call name="relationshipmgr.PartyServices.update#RmPerson"/>
+        <default-response url="."/>
+    </transition>
+
+    <transition name="updateOrganization">
+        <service-call name="relationshipmgr.PartyServices.update#RmOrganization"/>
+        <default-response url="."/>
+    </transition>
+
+    <transition name="addPartyRole">
+        <service-call name="create#relationshipmgr.RmPartyRole"/>
+        <default-response url="."/>
+    </transition>
+
+    <transition name="createContactMech">
+        <service-call name="relationshipmgr.PartyServices.create#RmContactMech"/>
+        <default-response url="."/>
+    </transition>
+
+    <transition name="expireContactMech">
+        <service-call name="relationshipmgr.PartyServices.expire#RmPartyContactMech"/>
+        <default-response url="."/>
+    </transition>
+
+    <actions>
+        <entity-find-one entity-name="relationshipmgr.RmParty" value-field="party"/>
+        <if condition="party == null">
+            <message error="true">Party not found with ID ${partyId}</message>
+        </if>
+
+        <if condition="party?.partyTypeId == 'PERSON'">
+            <entity-find-one entity-name="relationshipmgr.RmPerson" value-field="person"/>
+        </if>
+        <if condition="party?.partyTypeId == 'ORGANIZATION'">
+            <entity-find-one entity-name="relationshipmgr.RmOrganization" value-field="org"/>
+        </if>
+
+        <!-- Fetch party roles -->
+        <entity-find entity-name="relationshipmgr.RmPartyRole" list="partyRoles">
+            <econdition field-name="partyId" from="partyId"/>
+        </entity-find>
+
+        <!-- Fetch contact mechanisms using Groovy -->
+        <script>
+            import org.moqui.context.ExecutionContext
+            ExecutionContext ec = context.ec
+            def partyContactMechs = ec.entity.find("relationshipmgr.RmPartyContactMech")
+                .condition("partyId", partyId).orderBy("-fromDate").list()
+            def contactMechsList = []
+            for (pcm in partyContactMechs) {
+                def cmDetails = [
+                    partyId: pcm.partyId,
+                    contactMechId: pcm.contactMechId,
+                    contactMechPurposeId: pcm.contactMechPurposeId,
+                    fromDate: pcm.fromDate,
+                    thruDate: pcm.thruDate
+                ]
+                
+                boolean isExpired = pcm.thruDate != null && pcm.thruDate.before(ec.user.nowTimestamp)
+                cmDetails.isExpired = isExpired
+                
+                def cm = ec.entity.find("relationshipmgr.RmContactMech").condition("contactMechId", pcm.contactMechId).one()
+                if (cm != null) {
+                    cmDetails.contactMechTypeId = cm.contactMechTypeId
+                    cmDetails.infoString = cm.infoString
+                    
+                    if (cm.contactMechTypeId == "TELECOM_NUMBER") {
+                        def tel = ec.entity.find("relationshipmgr.RmTelecomNumber").condition("contactMechId", pcm.contactMechId).one()
+                        if (tel != null) {
+                            cmDetails.countryCode = tel.countryCode
+                            cmDetails.areaCode = tel.areaCode
+                            cmDetails.contactNumber = tel.contactNumber
+                            cmDetails.displayInfo = "${tel.countryCode ?: ''}-${tel.areaCode ?: ''}-${tel.contactNumber ?: ''}"
+                        }
+                    } else if (cm.contactMechTypeId == "POSTAL_ADDRESS") {
+                        def post = ec.entity.find("relationshipmgr.RmPostalAddress").condition("contactMechId", pcm.contactMechId).one()
+                        if (post != null) {
+                            cmDetails.toName = post.toName
+                            cmDetails.attnName = post.attnName
+                            cmDetails.address1 = post.address1
+                            cmDetails.address2 = post.address2
+                            cmDetails.city = post.city
+                            cmDetails.postalCode = post.postalCode
+                            cmDetails.displayInfo = "${post.toName ?: ''} / ${post.address1 ?: ''} ${post.address2 ?: ''}, ${post.city ?: ''} ${post.postalCode ?: ''}"
+                        }
+                    } else {
+                        cmDetails.displayInfo = cm.infoString
+                    }
+                }
+                contactMechsList.add(cmDetails)
+            }
+            context.contactMechsList = contactMechsList
+        </script>
+    </actions>
+
+    <widgets>
+        <container style="margin-bottom: 10px;">
+            <link url="../PartyList" text="Back to List" link-type="anchor"/>
+        </container>
+
+        <!-- Edit Section -->
+        <container-row>
+            <row-col lg="6" md="6" sm="12">
+                <if condition="party?.partyTypeId == 'PERSON'">
+                    <container-box>
+                        <box-header title="Edit Person Details"/>
+                        <box-body>
+                            <form-single name="EditPersonForm" transition="updatePerson" map="person">
+                                <field name="partyId"><default-field title="Party ID"><display/></default-field></field>
+                                <field name="firstName"><default-field title="First Name"><text-line size="30"/></default-field></field>
+                                <field name="lastName"><default-field title="Last Name"><text-line size="30"/></default-field></field>
+                                <field name="birthDate"><default-field title="Birth Date"><date-find/></default-field></field>
+                                <field name="submitButton"><default-field title="Update"><submit/></default-field></field>
+                            </form-single>
+                        </box-body>
+                    </container-box>
+                </if>
+                <if condition="party?.partyTypeId == 'ORGANIZATION'">
+                    <container-box>
+                        <box-header title="Edit Organization Details"/>
+                        <box-body>
+                            <form-single name="EditOrgForm" transition="updateOrganization" map="org">
+                                <field name="partyId"><default-field title="Party ID"><display/></default-field></field>
+                                <field name="organizationName"><default-field title="Organization Name"><text-line size="40"/></default-field></field>
+                                <field name="submitButton"><default-field title="Update"><submit/></default-field></field>
+                            </form-single>
+                        </box-body>
+                    </container-box>
+                </if>
+            </row-col>
+
+            <!-- Roles Section -->
+            <row-col lg="6" md="6" sm="12">
+                <container-box>
+                    <box-header title="Party Roles"/>
+                    <box-body>
+                        <form-list name="ListPartyRoles" list="partyRoles" skip-form="true">
+                            <field name="roleTypeId"><default-field title="Role Type"><display/></default-field></field>
+                        </form-list>
+
+                        <container style="margin-top: 15px;">
+                            <label text="Add New Role" style="h5"/>
+                            <form-single name="AddRoleForm" transition="addPartyRole">
+                                <field name="partyId" from="partyId"><default-field><hidden/></default-field></field>
+                                <field name="roleTypeId">
+                                    <default-field title="Role Type">
+                                        <drop-down allow-empty="false">
+                                            <option key="STUDENT" text="Student"/>
+                                            <option key="FACULTY" text="Faculty"/>
+                                            <option key="DEPARTMENT" text="Department"/>
+                                            <option key="INTERNAL_ORGANIZATION" text="Internal Organization"/>
+                                        </drop-down>
+                                    </default-field>
+                                </field>
+                                <field name="submitButton"><default-field title="Add Role"><submit/></default-field></field>
+                            </form-single>
+                        </container>
+                    </box-body>
+                </container-box>
+            </row-col>
+        </container-row>
+
+        <!-- Contact Mechanisms Section -->
+        <container-box>
+            <box-header title="Contact Mechanisms"/>
+            <box-body>
+                <form-list name="ListContactMechs" list="contactMechsList" skip-form="true">
+                    <field name="contactMechPurposeId"><default-field title="Purpose"><display/></default-field></field>
+                    <field name="contactMechTypeId"><default-field title="Type"><display/></default-field></field>
+                    <field name="displayInfo"><default-field title="Contact Information"><display/></default-field></field>
+                    <field name="fromDate"><default-field title="From Date"><display/></default-field></field>
+                    <field name="thruDate"><default-field title="Thru Date"><display/></default-field></field>
+                    <field name="status">
+                        <default-field title="Status">
+                            <label text="${isExpired ? 'Expired' : 'Active'}"/>
+                        </default-field>
+                    </field>
+                    <field name="expireLink">
+                        <default-field title="Action">
+                            <if condition="!isExpired">
+                                <link url="expireContactMech" text="Expire" link-type="anchor">
+                                    <parameter name="partyId"/>
+                                    <parameter name="contactMechId"/>
+                                    <parameter name="contactMechPurposeId"/>
+                                    <parameter name="fromDate"/>
+                                </link>
+                            </if>
+                        </default-field>
+                    </field>
+                </form-list>
+            </box-body>
+        </container-box>
+
+        <!-- Add Contacts Section -->
+        <container-row>
+            <row-col lg="4" md="4" sm="12">
+                <container-box>
+                    <box-header title="Add Email Address"/>
+                    <box-body>
+                        <form-single name="AddEmailForm" transition="createContactMech">
+                            <field name="partyId" from="partyId"><default-field><hidden/></default-field></field>
+                            <field name="contactMechTypeId" from="'EMAIL_ADDRESS'"><default-field><hidden/></default-field></field>
+                            <field name="contactMechPurposeId">
+                                <default-field title="Purpose">
+                                    <drop-down>
+                                        <option key="WORK" text="Work"/>
+                                        <option key="HOME" text="Home"/>
+                                    </drop-down>
+                                </default-field>
+                            </field>
+                            <field name="infoString"><default-field title="Email Address"><text-line size="30"/></default-field></field>
+                            <field name="submitButton"><default-field title="Add Email"><submit/></default-field></field>
+                        </form-single>
+                    </box-body>
+                </container-box>
+            </row-col>
+
+            <row-col lg="4" md="4" sm="12">
+                <container-box>
+                    <box-header title="Add Telecom Number"/>
+                    <box-body>
+                        <form-single name="AddTelecomForm" transition="createContactMech">
+                            <field name="partyId" from="partyId"><default-field><hidden/></default-field></field>
+                            <field name="contactMechTypeId" from="'TELECOM_NUMBER'"><default-field><hidden/></default-field></field>
+                            <field name="contactMechPurposeId">
+                                <default-field title="Purpose">
+                                    <drop-down>
+                                        <option key="WORK" text="Work"/>
+                                        <option key="HOME" text="Home"/>
+                                    </drop-down>
+                                </default-field>
+                            </field>
+                            <field name="countryCode"><default-field title="Country Code"><text-line size="5"/></default-field></field>
+                            <field name="areaCode"><default-field title="Area Code"><text-line size="5"/></default-field></field>
+                            <field name="contactNumber"><default-field title="Phone Number"><text-line size="15"/></default-field></field>
+                            <field name="submitButton"><default-field title="Add Phone"><submit/></default-field></field>
+                        </form-single>
+                    </box-body>
+                </container-box>
+            </row-col>
+
+            <row-col lg="4" md="4" sm="12">
+                <container-box>
+                    <box-header title="Add Postal Address"/>
+                    <box-body>
+                        <form-single name="AddPostalForm" transition="createContactMech">
+                            <field name="partyId" from="partyId"><default-field><hidden/></default-field></field>
+                            <field name="contactMechTypeId" from="'POSTAL_ADDRESS'"><default-field><hidden/></default-field></field>
+                            <field name="contactMechPurposeId">
+                                <default-field title="Purpose">
+                                    <drop-down>
+                                        <option key="GENERAL" text="General"/>
+                                        <option key="BILLING" text="Billing"/>
+                                        <option key="SHIPPING" text="Shipping"/>
+                                        <option key="OFFICE" text="Office"/>
+                                    </drop-down>
+                                </default-field>
+                            </field>
+                            <field name="toName"><default-field title="To Name"><text-line size="30"/></default-field></field>
+                            <field name="attnName"><default-field title="Attn Name"><text-line size="30"/></default-field></field>
+                            <field name="address1"><default-field title="Address Line 1"><text-line size="30"/></default-field></field>
+                            <field name="address2"><default-field title="Address Line 2"><text-line size="30"/></default-field></field>
+                            <field name="city"><default-field title="City"><text-line size="20"/></default-field></field>
+                            <field name="postalCode"><default-field title="Postal Code"><text-line size="10"/></default-field></field>
+                            <field name="submitButton"><default-field title="Add Address"><submit/></default-field></field>
+                        </form-single>
+                    </box-body>
+                </container-box>
+            </row-col>
+        </container-row>
+    </widgets>
+</screen>

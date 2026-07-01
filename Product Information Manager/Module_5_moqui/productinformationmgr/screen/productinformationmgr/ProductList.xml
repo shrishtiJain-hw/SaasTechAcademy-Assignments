@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-3.xsd"
+    default-menu-title="Products List" default-menu-index="1">
+
+    <transition name="createProduct">
+        <service-call name="productinformationmgr.ProductServices.create#PimProduct"/>
+        <default-response url="."/>
+    </transition>
+
+    <actions>
+        <entity-find entity-name="productinformationmgr.PimProduct" list="productList">
+            <search-form-inputs/>
+            <order-by field-name="productId"/>
+        </entity-find>
+    </actions>
+
+    <widgets>
+        <container-row>
+            <row-col lg="4" md="4" sm="12">
+                <container-box>
+                    <box-header title="Find Products"/>
+                    <box-body>
+                        <form-single name="FindProductsForm" transition=".">
+                            <field name="productId"><default-field title="Product ID"><text-line size="20"/></default-field></field>
+                            <field name="productName"><default-field title="Product Name"><text-line size="30"/></default-field></field>
+                            <field name="productTypeId">
+                                <default-field title="Type">
+                                    <drop-down allow-empty="true">
+                                        <option key="FINISHED_GOOD" text="Finished Good"/>
+                                        <option key="RAW_MATERIAL" text="Raw Material"/>
+                                        <option key="SERVICE" text="Service"/>
+                                        <option key="MARKETING_PACKAGE" text="Marketing Package"/>
+                                    </drop-down>
+                                </default-field>
+                            </field>
+                            <field name="submitButton"><default-field title="Search"><submit/></default-field></field>
+                        </form-single>
+                    </box-body>
+                </container-box>
+            </row-col>
+
+            <row-col lg="8" md="8" sm="12">
+                <container-box>
+                    <box-header title="Create Product"/>
+                    <box-body>
+                        <form-single name="CreateProductForm" transition="createProduct">
+                            <field name="productId"><default-field title="Product ID"><text-line size="20"/></default-field></field>
+                            <field name="productName"><default-field title="Product Name"><text-line size="30"/></default-field></field>
+                            <field name="productTypeId">
+                                <default-field title="Type">
+                                    <drop-down>
+                                        <option key="FINISHED_GOOD" text="Finished Good"/>
+                                        <option key="RAW_MATERIAL" text="Raw Material"/>
+                                        <option key="SERVICE" text="Service"/>
+                                        <option key="MARKETING_PACKAGE" text="Marketing Package"/>
+                                    </drop-down>
+                                </default-field>
+                            </field>
+                            <field name="isVirtual"><default-field title="Is Virtual?"><drop-down><option key="N" text="No"/><option key="Y" text="Yes"/></drop-down></default-field></field>
+                            <field name="isVariant"><default-field title="Is Variant?"><drop-down><option key="N" text="No"/><option key="Y" text="Yes"/></drop-down></default-field></field>
+                            <field name="submitButton"><default-field title="Create Product"><submit/></default-field></field>
+                        </form-single>
+                    </box-body>
+                </container-box>
+            </row-col>
+        </container-row>
+
+        <container-box>
+            <box-header title="Products List"/>
+            <box-body>
+                <form-list name="ListProducts" list="productList" skip-form="true">
+                    <field name="productId">
+                        <header-field show-order-by="true" title="Product ID"/>
+                        <default-field>
+                            <link url="../ProductDetail" text="${productId}">
+                                <parameter name="productId"/>
+                            </link>
+                        </default-field>
+                    </field>
+                    <field name="productName">
+                        <header-field show-order-by="true" title="Name"/>
+                        <default-field><label text="${productName}"/></default-field>
+                    </field>
+                    <field name="productTypeId">
+                        <header-field show-order-by="true" title="Type"/>
+                        <default-field><label text="${productTypeId}"/></default-field>
+                    </field>
+                    <field name="isVirtual">
+                        <header-field title="Virtual"/>
+                        <default-field><label text="${isVirtual}"/></default-field>
+                    </field>
+                    <field name="isVariant">
+                        <header-field title="Variant"/>
+                        <default-field><label text="${isVariant}"/></default-field>
+                    </field>
+                </form-list>
+            </box-body>
+        </container-box>
+    </widgets>
+</screen>

@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/service-definition-3.xsd">
+
+    <!-- ========================================================= -->
+    <!-- PimProduct Services                                       -->
+    <!-- ========================================================= -->
+
+    <service verb="create" noun="PimProduct">
+        <in-parameters>
+            <parameter name="productId" required="true"/>
+            <parameter name="productName" required="true"/>
+            <parameter name="productTypeId" required="true"/>
+            <parameter name="isVirtual" default="'N'"/>
+            <parameter name="isVariant" default="'N'"/>
+        </in-parameters>
+        <actions>
+            <entity-make-value entity-name="productinformationmgr.PimProduct" value-field="newProduct" map="context"/>
+            <entity-create value-field="newProduct"/>
+        </actions>
+    </service>
+
+    <service verb="update" noun="PimProduct">
+        <in-parameters>
+            <parameter name="productId" required="true"/>
+            <parameter name="productName"/>
+            <parameter name="productTypeId"/>
+            <parameter name="isVirtual"/>
+            <parameter name="isVariant"/>
+        </in-parameters>
+        <actions>
+            <entity-find-one entity-name="productinformationmgr.PimProduct" value-field="product"/>
+            <if condition="product">
+                <entity-set-values value-field="product" map="context"/>
+                <entity-update value-field="product"/>
+            </if>
+        </actions>
+    </service>
+
+    <!-- ========================================================= -->
+    <!-- PimProductContent Services                                -->
+    <!-- ========================================================= -->
+
+    <service verb="create" noun="PimProductContent">
+        <in-parameters>
+            <parameter name="productContentId"/>
+            <parameter name="productId" required="true"/>
+            <parameter name="productContentTypeId" required="true"/>
+            <parameter name="contentLocation" required="true"/>
+        </in-parameters>
+        <out-parameters>
+            <parameter name="productContentId" required="true"/>
+        </out-parameters>
+        <actions>
+            <if condition="!productContentId">
+                <set field="productContentId" from="ec.entity.sequencedIdPrimary('productinformationmgr.PimProductContent', null, null)"/>
+            </if>
+            <entity-make-value entity-name="productinformationmgr.PimProductContent" value-field="newProductContent" map="context"/>
+            <entity-create value-field="newProductContent"/>
+        </actions>
+    </service>
+
+    <!-- ========================================================= -->
+    <!-- PimProductPrice Services                                  -->
+    <!-- ========================================================= -->
+
+    <service verb="create" noun="PimProductPrice">
+        <in-parameters>
+            <parameter name="productPriceId"/>
+            <parameter name="productId" required="true"/>
+            <parameter name="productPriceTypeId" required="true"/>
+            <parameter name="price" type="BigDecimal" required="true"/>
+        </in-parameters>
+        <out-parameters>
+            <parameter name="productPriceId" required="true"/>
+        </out-parameters>
+        <actions>
+            <if condition="!productPriceId">
+                <set field="productPriceId" from="ec.entity.sequencedIdPrimary('productinformationmgr.PimProductPrice', null, null)"/>
+            </if>
+            <entity-make-value entity-name="productinformationmgr.PimProductPrice" value-field="newProductPrice" map="context"/>
+            <entity-create value-field="newProductPrice"/>
+        </actions>
+    </service>
+
+    <!-- ========================================================= -->
+    <!-- PimProductDimension Services                              -->
+    <!-- ========================================================= -->
+
+    <service verb="create" noun="PimProductDimension">
+        <in-parameters>
+            <parameter name="productId" required="true"/>
+            <parameter name="dimensionTypeId" required="true"/>
+            <parameter name="dimensionValue" type="BigDecimal" required="true"/>
+            <parameter name="valueUomId"/>
+        </in-parameters>
+        <actions>
+            <entity-make-value entity-name="productinformationmgr.PimProductDimension" value-field="newProductDimension" map="context"/>
+            <entity-create value-field="newProductDimension"/>
+        </actions>
+    </service>
+
+    <!-- ========================================================= -->
+    <!-- PimProductAssoc Services                                  -->
+    <!-- ========================================================= -->
+
+    <service verb="create" noun="PimProductAssoc">
+        <in-parameters>
+            <parameter name="productId" required="true"/>
+            <parameter name="toProductId" required="true"/>
+            <parameter name="productAssocTypeId" required="true"/>
+            <parameter name="fromDate" type="Timestamp" required="true"/>
+            <parameter name="thruDate" type="Timestamp"/>
+        </in-parameters>
+        <actions>
+            <entity-make-value entity-name="productinformationmgr.PimProductAssoc" value-field="newProductAssoc" map="context"/>
+            <entity-create value-field="newProductAssoc"/>
+        </actions>
+    </service>
+
+    <!-- ========================================================= -->
+    <!-- PimProductCategory Services                               -->
+    <!-- ========================================================= -->
+
+    <service verb="create" noun="PimProductCategory">
+        <in-parameters>
+            <parameter name="productCategoryId" required="true"/>
+            <parameter name="productCategoryTypeId" required="true"/>
+            <parameter name="parentProductCategoryId"/>
+            <parameter name="categoryName" required="true"/>
+        </in-parameters>
+        <actions>
+            <entity-make-value entity-name="productinformationmgr.PimProductCategory" value-field="newProductCategory" map="context"/>
+            <entity-create value-field="newProductCategory"/>
+        </actions>
+    </service>
+
+    <service verb="update" noun="PimProductCategory">
+        <in-parameters>
+            <parameter name="productCategoryId" required="true"/>
+            <parameter name="productCategoryTypeId"/>
+            <parameter name="parentProductCategoryId"/>
+            <parameter name="categoryName"/>
+        </in-parameters>
+        <actions>
+            <entity-find-one entity-name="productinformationmgr.PimProductCategory" value-field="category"/>
+            <if condition="category">
+                <entity-set-values value-field="category" map="context"/>
+                <entity-update value-field="category"/>
+            </if>
+        </actions>
+    </service>
+
+    <service verb="create" noun="PimProductCategoryMember">
+        <in-parameters>
+            <parameter name="productId" required="true"/>
+            <parameter name="productCategoryId" required="true"/>
+            <parameter name="fromDate" type="Timestamp" required="true"/>
+            <parameter name="thruDate" type="Timestamp"/>
+        </in-parameters>
+        <actions>
+            <entity-make-value entity-name="productinformationmgr.PimProductCategoryMember" value-field="newProductCategoryMember" map="context"/>
+            <entity-create value-field="newProductCategoryMember"/>
+        </actions>
+    </service>
+
+    <service verb="expire" noun="PimProductCategoryMember">
+        <in-parameters>
+            <parameter name="productId" required="true"/>
+            <parameter name="productCategoryId" required="true"/>
+            <parameter name="fromDate" type="Timestamp" required="true"/>
+        </in-parameters>
+        <actions>
+            <entity-find-one entity-name="productinformationmgr.PimProductCategoryMember" value-field="pcm"/>
+            <if condition="pcm">
+                <set field="pcm.thruDate" from="ec.user.nowTimestamp"/>
+                <entity-update value-field="pcm"/>
+            </if>
+        </actions>
+    </service>
+
+    <!-- ========================================================= -->
+    <!-- PimProductFeature Services                                -->
+    <!-- ========================================================= -->
+
+    <service verb="create" noun="PimProductFeature">
+        <in-parameters>
+            <parameter name="productFeatureId" required="true"/>
+            <parameter name="productFeatureTypeId" required="true"/>
+        </in-parameters>
+        <actions>
+            <entity-make-value entity-name="productinformationmgr.PimProductFeature" value-field="newProductFeature" map="context"/>
+            <entity-create value-field="newProductFeature"/>
+        </actions>
+    </service>
+
+    <service verb="create" noun="PimProductFeatureAppl">
+        <in-parameters>
+            <parameter name="productId" required="true"/>
+            <parameter name="productFeatureId" required="true"/>
+            <parameter name="fromDate" type="Timestamp" required="true"/>
+            <parameter name="thruDate" type="Timestamp"/>
+            <parameter name="applTypeEnumId"/>
+        </in-parameters>
+        <actions>
+            <entity-make-value entity-name="productinformationmgr.PimProductFeatureAppl" value-field="newProductFeatureAppl" map="context"/>
+            <entity-create value-field="newProductFeatureAppl"/>
+        </actions>
+    </service>
+
+    <service verb="expire" noun="PimProductFeatureAppl">
+        <in-parameters>
+            <parameter name="productId" required="true"/>
+            <parameter name="productFeatureId" required="true"/>
+            <parameter name="fromDate" type="Timestamp" required="true"/>
+        </in-parameters>
+        <actions>
+            <entity-find-one entity-name="productinformationmgr.PimProductFeatureAppl" value-field="pfa"/>
+            <if condition="pfa">
+                <set field="pfa.thruDate" from="ec.user.nowTimestamp"/>
+                <entity-update value-field="pfa"/>
+            </if>
+        </actions>
+    </service>
+
+    <!-- ========================================================= -->
+    <!-- PimFacility Services                                      -->
+    <!-- ========================================================= -->
+
+    <service verb="create" noun="PimFacility">
+        <in-parameters>
+            <parameter name="facilityId" required="true"/>
+            <parameter name="facilityTypeId" required="true"/>
+            <parameter name="facilityName" required="true"/>
+            <parameter name="parentFacilityId"/>
+        </in-parameters>
+        <actions>
+            <entity-make-value entity-name="productinformationmgr.PimFacility" value-field="newFacility" map="context"/>
+            <entity-create value-field="newFacility"/>
+        </actions>
+    </service>
+
+    <service verb="update" noun="PimFacility">
+        <in-parameters>
+            <parameter name="facilityId" required="true"/>
+            <parameter name="facilityTypeId"/>
+            <parameter name="facilityName"/>
+            <parameter name="parentFacilityId"/>
+        </in-parameters>
+        <actions>
+            <entity-find-one entity-name="productinformationmgr.PimFacility" value-field="fac"/>
+            <if condition="fac">
+                <entity-set-values value-field="fac" map="context"/>
+                <entity-update value-field="fac"/>
+            </if>
+        </actions>
+    </service>
+
+    <service verb="create" noun="PimFacilityLocation">
+        <in-parameters>
+            <parameter name="facilityId" required="true"/>
+            <parameter name="locationSeqId" required="true"/>
+            <parameter name="areaId"/>
+            <parameter name="aisleId"/>
+            <parameter name="sectionId"/>
+            <parameter name="levelId"/>
+            <parameter name="positionId"/>
+        </in-parameters>
+        <actions>
+            <entity-make-value entity-name="productinformationmgr.PimFacilityLocation" value-field="newFacilityLocation" map="context"/>
+            <entity-create value-field="newFacilityLocation"/>
+        </actions>
+    </service>
+
+    <service verb="create" noun="PimProductFacility">
+        <in-parameters>
+            <parameter name="facilityId" required="true"/>
+            <parameter name="productId" required="true"/>
+        </in-parameters>
+        <actions>
+            <entity-make-value entity-name="productinformationmgr.PimProductFacility" value-field="newProductFacility" map="context"/>
+            <entity-create value-field="newProductFacility"/>
+        </actions>
+    </service>
+
+    <service verb="create" noun="PimProductFacilityLocation">
+        <in-parameters>
+            <parameter name="productId" required="true"/>
+            <parameter name="facilityId" required="true"/>
+            <parameter name="locationSeqId" required="true"/>
+        </in-parameters>
+        <actions>
+            <entity-make-value entity-name="productinformationmgr.PimProductFacilityLocation" value-field="newProductFacilityLocation" map="context"/>
+            <entity-create value-field="newProductFacilityLocation"/>
+        </actions>
+    </service>
+
+    <service verb="create" noun="PimFacilityParty">
+        <in-parameters>
+            <parameter name="facilityId" required="true"/>
+            <parameter name="partyId" required="true"/>
+            <parameter name="roleTypeId" required="true"/>
+        </in-parameters>
+        <actions>
+            <entity-make-value entity-name="productinformationmgr.PimFacilityParty" value-field="newFacilityParty" map="context"/>
+            <entity-create value-field="newFacilityParty"/>
+        </actions>
+    </service>
+
+    <service verb="create" noun="PimFacilityGroup">
+        <in-parameters>
+            <parameter name="facilityGroupId" required="true"/>
+            <parameter name="facilityGroupTypeId" required="true"/>
+            <parameter name="parentGroupId"/>
+            <parameter name="facilityGroupName" required="true"/>
+        </in-parameters>
+        <actions>
+            <entity-make-value entity-name="productinformationmgr.PimFacilityGroup" value-field="newFacilityGroup" map="context"/>
+            <entity-create value-field="newFacilityGroup"/>
+        </actions>
+    </service>
+
+    <service verb="create" noun="PimFacilityGroupMember">
+        <in-parameters>
+            <parameter name="facilityGroupId" required="true"/>
+            <parameter name="facilityId" required="true"/>
+        </in-parameters>
+        <actions>
+            <entity-make-value entity-name="productinformationmgr.PimFacilityGroupMember" value-field="newFacilityGroupMember" map="context"/>
+            <entity-create value-field="newFacilityGroupMember"/>
+        </actions>
+    </service>
+
+    <service verb="create" noun="PimFacilityContactMech">
+        <in-parameters>
+            <parameter name="facilityId" required="true"/>
+            <parameter name="contactMechId" required="true"/>
+            <parameter name="contactMechPurposeTypeId" required="true"/>
+            <parameter name="fromDate" type="Timestamp" required="true"/>
+            <parameter name="thruDate" type="Timestamp"/>
+        </in-parameters>
+        <actions>
+            <entity-make-value entity-name="productinformationmgr.PimFacilityContactMech" value-field="newFacilityContactMech" map="context"/>
+            <entity-create value-field="newFacilityContactMech"/>
+        </actions>
+    </service>
+
+    <service verb="expire" noun="PimFacilityContactMech">
+        <in-parameters>
+            <parameter name="facilityId" required="true"/>
+            <parameter name="contactMechId" required="true"/>
+            <parameter name="contactMechPurposeTypeId" required="true"/>
+            <parameter name="fromDate" type="Timestamp" required="true"/>
+        </in-parameters>
+        <actions>
+            <entity-find-one entity-name="productinformationmgr.PimFacilityContactMech" value-field="fcm"/>
+            <if condition="fcm">
+                <set field="fcm.thruDate" from="ec.user.nowTimestamp"/>
+                <entity-update value-field="fcm"/>
+            </if>
+        </actions>
+    </service>
+
+</services>

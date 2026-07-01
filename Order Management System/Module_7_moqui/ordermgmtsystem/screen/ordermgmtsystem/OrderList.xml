@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://moqui.org/xsd/xml-screen-3.xsd"
+    default-menu-title="Orders List" default-menu-index="1">
+
+    <transition name="createOrder">
+        <actions>
+            <script>
+                context.productIdList = productIdListStr.split(',').collect { it.trim() }
+                context.productQuantities = productQuantitiesStr.split(',').collect { new BigDecimal(it.trim()) }
+                context.paymentAmount = new BigDecimal(paymentAmountStr)
+            </script>
+            <service-call name="ordermgmtsystem.OrderServices.create#Order" in-map="context"/>
+        </actions>
+        <default-response url="."/>
+    </transition>
+
+    <actions>
+        <service-call name="ordermgmtsystem.OrderServices.find#Order" in-map="context" out-map="findResult"/>
+        <set field="orderList" from="findResult.orderList"/>
+    </actions>
+
+    <widgets>
+        <container-row>
+            <!-- Find Form -->
+            <row-col lg="4" md="4" sm="12">
+                <container-box>
+                    <box-header title="Find Orders"/>
+                    <box-body>
+                        <form-single name="FindOrdersForm" transition=".">
+                            <field name="orderId"><default-field title="Order ID"><text-line size="20"/></default-field></field>
+                            <field name="customerName"><default-field title="Customer Name"><text-line size="30"/></default-field></field>
+                            <field name="shippingAddress"><default-field title="Shipping Address"><text-line size="30"/></default-field></field>
+                            <field name="statusId">
+                                <default-field title="Order Status">
+                                    <drop-down allow-empty="true">
+                                        <option key="ORDER_CREATED" text="Created"/>
+                                        <option key="ORDER_COMPLETED" text="Completed"/>
+                                        <option key="ORDER_CANCELLED" text="Cancelled"/>
+                                    </drop-down>
+                                </default-field>
+                            </field>
+                            <field name="paymentStatus">
+                                <default-field title="Payment Status">
+                                    <drop-down allow-empty="true">
+                                        <option key="PAY_AUTHORIZED" text="Authorized"/>
+                                        <option key="PAY_SETTLED" text="Settled"/>
+                                        <option key="PAY_CANCELLED" text="Cancelled"/>
+                                    </drop-down>
+                                </default-field>
+                            </field>
+                            <field name="submitButton"><default-field title="Search"><submit/></default-field></field>
+                        </form-single>
+                    </box-body>
+                </container-box>
+            </row-col>
+
+            <!-- Create Order Form -->
+            <row-col lg="8" md="8" sm="12">
+                <container-box>
+                    <box-header title="Create Sales Order"/>
+                    <box-body>
+                        <form-single name="CreateOrderForm" transition="createOrder">
+                            <field name="customerPartyId">
+                                <default-field title="Customer">
+                                    <drop-down>
+                                        <entity-options key="${partyId}" text="${firstName ?: ''} ${lastName ?: ''} ${organizationName ?: ''} [${partyId}]">
+                                            <entity-find entity-name="relationshipmgr.RmPartyDetailView">
+                                                <order-by field-name="partyId"/>
+                                            </entity-find>
+                                        </entity-options>
+                                    </drop-down>
+                                </default-field>
+                            </field>
+                            <field name="postalContactMechId">
+                                <default-field title="Shipping Address">
+                                    <drop-down allow-empty="true">
+                                        <entity-options key="${contactMechId}" text="${toName ?: ''} - ${address1 ?: ''}, ${city ?: ''} [${contactMechId}]">
+                                            <entity-find entity-name="relationshipmgr.RmPostalAddress">
+                                                <order-by field-name="toName"/>
+                                            </entity-find>
+                                        </entity-options>
+                                    </drop-down>
+                                </default-field>
+                            </field>
+                            <field name="productIdListStr"><default-field title="Product ID List (comma separated)"><text-line size="40" default-value="PROD10001,PROD20001"/></default-field></field>
+                            <field name="productQuantitiesStr"><default-field title="Quantities List (comma separated)"><text-line size="40" default-value="2,1"/></default-field></field>
+                            <field name="paymentMethod">
+                                <default-field title="Payment Method">
+                                    <drop-down>
+                                        <option key="CREDIT_CARD" text="Credit Card"/>
+                                        <option key="CASH_ON_DELIVERY" text="Cash on Delivery"/>
+                                    </drop-down>
+                                </default-field>
+                            </field>
+                            <field name="paymentAmountStr"><default-field title="Payment Amount"><text-line size="15" default-value="2899.97"/></default-field></field>
+                            <field name="submitButton"><default-field title="Place Order"><submit/></default-field></field>
+                        </form-single>
+                    </box-body>
+                </container-box>
+            </row-col>
+        </container-row>
+
+        <container-box>
+            <box-header title="Orders List"/>
+            <box-body>
+                <form-list name="ListOrders" list="orderList" skip-form="true">
+                    <field name="orderId">
+                        <header-field title="Order ID"/>
+                        <default-field>
+                            <link url="../OrderDetail" text="${orderId}">
+                                <parameter name="orderId"/>
+                            </link>
+                        </default-field>
+                    </field>
+                    <field name="orderDate">
+                        <header-field title="Order Date"/>
+                        <default-field><label text="${ec.l10n.format(orderDate, 'yyyy-MM-dd HH:mm:ss')}"/></default-field>
+                    </field>
+                    <field name="customerName">
+                        <header-field title="Customer"/>
+                        <default-field><label text="${customerFirstName ?: ''} ${customerLastName ?: ''}"/></default-field>
+                    </field>
+                    <field name="shippingAddress">
+                        <header-field title="Shipping Address"/>
+                        <default-field><label text="${shippingAddress1 ?: ''}, ${shippingCity ?: ''} ${shippingPostalCode ?: ''}"/></default-field>
+                    </field>
+                    <field name="statusId">
+                        <header-field title="Status"/>
+                        <default-field><label text="${statusId}"/></default-field>
+                    </field>
+                    <field name="paymentMethod">
+                        <header-field title="Payment Method"/>
+                        <default-field><label text="${paymentMethod ?: ''}"/></default-field>
+                    </field>
+                    <field name="paymentStatus">
+                        <header-field title="Payment Status"/>
+                        <default-field><label text="${paymentStatus ?: ''}"/></default-field>
+                    </field>
+                    <field name="orderSubTotal">
+                        <header-field title="SubTotal"/>
+                        <default-field><label text="${ec.l10n.format(orderSubTotal, '$#,##0.00')}"/></default-field>
+                    </field>
+                </form-list>
+            </box-body>
+        </container-box>
+    </widgets>
+</screen>
